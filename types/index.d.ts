@@ -8,7 +8,23 @@ type ApiResponse = {
     links?: any;
     meta?: any;
 };
-
+type ClaimForm = {
+    debtorId: number | null;
+    creditTerms: string | null;
+    otherNetworks: string | null;
+    insurance: string | null;
+    comment: string | null;
+    person: string | null;
+    email: string | null;
+    invoices: Invoice[];
+    files: number[] | Media[];
+};
+type Currency = {
+    id: number;
+    name: string;
+    code: string;
+    position: number;
+};
 type Expo = {
     id: number;
     name: string;

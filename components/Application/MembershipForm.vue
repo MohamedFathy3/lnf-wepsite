@@ -198,6 +198,58 @@ async function closeModal() {
                                     label="Network Logo"
                                     name="company-logo"
                                 />
+                                
+                                <!-- Tabs Section Instead of Long Vertical List -->
+                                <div class="mt-4">
+                                    <!-- Tab Headers -->
+                                    <div class="flex border-b border-gray-200">
+                                        <button 
+                                            @click="activeFeeTab = 'fees'" 
+                                            :class="[
+                                                'py-2 px-4 text-sm font-medium transition-all duration-200 -mb-px',
+                                                activeFeeTab === 'fees' 
+                                                    ? 'border-b-2 border-blue-600 text-blue-600' 
+                                                    : 'text-gray-500 hover:text-gray-700 border-b-2 border-transparent'
+                                            ]"
+                                            type="button"
+                                        >
+                                            Registration Fees
+                                        </button>
+                                        <button 
+                                            @click="activeFeeTab = 'info'" 
+                                            :class="[
+                                                'py-2 px-4 text-sm font-medium transition-all duration-200 -mb-px',
+                                                activeFeeTab === 'info' 
+                                                    ? 'border-b-2 border-blue-600 text-blue-600' 
+                                                    : 'text-gray-500 hover:text-gray-700 border-b-2 border-transparent'
+                                            ]"
+                                            type="button"
+                                        >
+                                            Registration Info
+                                        </button>
+                                    </div>
+                                    
+                                    <!-- Tab Content: Fees -->
+                                    <div v-show="activeFeeTab === 'fees'" class="mt-4">
+                                        <div class="text-center py-4">
+                                            <div class="text-3xl font-bold text-gray-900">1500 USD</div>
+                                            <p class="text-sm text-gray-500 mt-1">LNF Registration Fees</p>
+                                            <p class="text-xs text-gray-400 mt-3">Includes access for one official delegate</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Tab Content: Information -->
+                                    <div v-show="activeFeeTab === 'info'" class="mt-4">
+                                        <div class="text-sm text-gray-600 max-h-48 overflow-y-auto pr-2">
+                                            <ul class="list-disc list-inside space-y-2">
+                                                <li>The registration fee includes access for one official delegate representing your company.</li>
+                                                <li>By submitting this form and clicking the Register button, you acknowledge and agree to the LNF Terms &amp; Conditions.</li>
+                                                <li>LNF brings together logistics, freight forwarding, and supply chain professionals from around the world to build valuable partnerships and drive business growth.</li>
+                                                <li>Register now to connect with industry leaders, explore new opportunities, and become part of a trusted global logistics network.</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="gap-5 grid lg:grid-cols-12">
