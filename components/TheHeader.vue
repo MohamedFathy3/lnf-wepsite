@@ -90,12 +90,12 @@ const logout = () => {
                                     <span>Application Form</span>
                                 </button>
                             </NuxtLink>
-                            <NuxtLink href="/login">
+                            <!-- <NuxtLink href="/login">
                                 <button class="btn btn-sm btn-primary gap-2 px-4">
                                     <Icon name="solar:login-3-linear" class="size-4" />
                                     <span>Login</span>
                                 </button>
-                            </NuxtLink>
+                            </NuxtLink> -->
                         </div>
                     </template>
 
