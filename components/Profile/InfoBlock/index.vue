@@ -50,11 +50,11 @@ const props = defineProps<{
         <ProfileInfoBlockSection class="py-3" icon="solar:global-outline" title="Website">
             <div>{{ props.member.website }}</div>
         </ProfileInfoBlockSection>
-        <ProfileInfoBlockSection class="py-3" icon="solar:round-transfer-vertical-outline" title="Services">
+        <!-- <ProfileInfoBlockSection class="py-3" icon="solar:round-transfer-vertical-outline" title="Services">
             <ProfileInfoBlockResourcesList :extra-resource="props.member.otherServices as string" :resource="props.member.services as number[]" resource-type="service" />
         </ProfileInfoBlockSection>
         <ProfileInfoBlockSection class="py-3" icon="solar:medal-ribbon-star-outline" title="Certificates">
             <ProfileInfoBlockResourcesList :extra-resource="props.member.otherCertificates as string" :resource="props.member.certificates as number[]" resource-type="certificate" />
-        </ProfileInfoBlockSection>
+        </ProfileInfoBlockSection> -->
     </div>
 </template>

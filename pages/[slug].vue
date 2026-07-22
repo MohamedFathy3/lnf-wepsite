@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import GlobalFreightDay from '@/components/GlobalFreightDay.vue'
+import type { ApiResponse, Page, PageSection, Slider } from '~/types';
 const route = useRoute();
 const slug = ref(route.params.slug);
 
@@ -108,10 +109,7 @@ onMounted(async () => {
 </script>
 
 <template>
-
     <div v-if="status !== 'pending'">
-
-        <!-- ✅ الإصلاح: GlobalFreightDay أصبحت أول حلقة في الـ chain -->
         <GlobalFreightDay v-if="slug === 'global-freight-day'" />
 
         <div v-else-if="slug === 'about'">
@@ -124,57 +122,35 @@ onMounted(async () => {
             <SectionAbout :sections="(page as Page).pageSections as PageSection[]" />
         </div>
 
+        <!-- ✅ welcome-network -->
         <div v-else-if="slug === 'welcome-network'">
             <div v-if="(page as Page).pageSections && (page as Page).pageSections.length > 0" class="dynamic-sections">
                 <template v-for="(section, index) in (page as Page).pageSections as PageSection[]" :key="`section-${section.id || index}`">
-                    <SectionIntro v-if="section.type === 'intro' || section.type === 'grid-home-section'" 
-                                 :section="section" :id="`section-${index}`" />
-                    <SectionEventsGrid v-if="section.type === 'events-grid'" 
-                                      :section="section" :id="`section-${index}`" />
-                    <SectionTeam v-if="section.type === 'team-grid'" 
-                                :section="section" :id="`section-${index}`" />
-                    <SectionNetwork v-if="section.type === 'network-grid'" 
-                                   :section="section" :id="`section-${index}`" />
-                    <SectionIntroNoTitle v-if="section.type === 'intro-no-title'" 
-                                       :section="section" :id="`section-${index}`" />
-                    <SectionDefaultWithImage v-if="section.type === 'image-banner-section'" 
-                                            :section="section" :id="`section-${index}`" />
-                    <SectionBenefitsGrid v-if="section.type === 'benefits-grid'" 
-                                        :section="section" :id="`section-${index}`" />
-                    <SectionBenefitsList v-if="section.type === 'benefits-list'" 
-                                        :section="section" :id="`section-${index}`" />
-                    <SectionStatus v-if="section.type === 'site-states'" 
-                                  :section="section" :id="`section-${index}`" />
-                    <SectionTestimonials v-if="section.type === 'testimonials-slider'" 
-                                        :section="section" :id="`section-${index}`" />
-                    <SectionPartners v-if="section.type === 'partners-slider'" 
-                                    :section="section" :id="`section-${index}`" />
-                    <SectionCallToAction v-if="section.type === 'cta'" 
-                                        :section="section" :id="`section-${index}`" />
-                    <SectionEvents v-if="section.type === 'events-list'" 
-                                  :section="section" :id="`section-${index}`" />
-                    <SectionDirectory v-if="section.type === 'network-directory'" 
-                                     :section="section" :id="`section-${index}`" />
-                    <SectionDirectoryBlacklist v-if="section.type === 'blacklisted-directory'" 
-                                              :section="section" :id="`section-${index}`" />
-                    <SectionPolicy v-if="section.type === 'privacy-policy'" 
-                                  :section="section" :id="`section-${index}`" />
-                    <SectionFaq v-if="section.type === 'faqs-list'" 
-                               :section="section" :id="`section-${index}`" />
-                    <SectionIncoterms v-if="section.type === 'incoterms-list'" 
-                                     :section="section" :id="`section-${index}`" />
-                    <SectionFreightCalculator v-if="section.type === 'freight-tools'" 
-                                             :section="section" :id="`section-${index}`" />
-                                             
-                    <SectionContactForm v-if="section.type === 'contact-form'" 
-                                       :section="section" :id="`section-${index}`" />
-                    <SectionDefault v-if="section.type === 'about-right-image' || section.type === 'about-left-image' || section.type === 'about-no-image'" 
-                                   :section="section" :id="`section-${index}`" />
+                    <SectionIntro v-if="section.type === 'intro' || section.type === 'grid-home-section'" :section="section" :id="`section-${index}`" />
+                    <SectionEventsGrid v-if="section.type === 'events-grid'" :section="section" :id="`section-${index}`" />
+                    <SectionTeam v-if="section.type === 'team-grid'" :section="section" :id="`section-${index}`" />
+                    <SectionNetwork v-if="section.type === 'network-grid'" :section="section" :id="`section-${index}`" />
+                    <SectionIntroNoTitle v-if="section.type === 'intro-no-title'" :section="section" :id="`section-${index}`" />
+                    <SectionDefaultWithImage v-if="section.type === 'image-banner-section'" :section="section" :id="`section-${index}`" />
+                    <SectionBenefitsGrid v-if="section.type === 'benefits-grid'" :section="section" :id="`section-${index}`" />
+                    <SectionBenefitsList v-if="section.type === 'benefits-list'" :section="section" :id="`section-${index}`" />
+                    <SectionStatus v-if="section.type === 'site-states'" :section="section" :id="`section-${index}`" />
+                    <SectionTestimonials v-if="section.type === 'testimonials-slider'" :section="section" :id="`section-${index}`" />
+                    <SectionPartners v-if="section.type === 'partners-slider'" :section="section" :id="`section-${index}`" />
+                    <SectionCallToAction v-if="section.type === 'cta'" :section="section" :id="`section-${index}`" />
+                    <SectionEvents v-if="section.type === 'events-list'" :section="section" :id="`section-${index}`" />
+                    <SectionDirectory v-if="section.type === 'network-directory'" :section="section" :id="`section-${index}`" />
+                    <SectionDirectoryBlacklist v-if="section.type === 'blacklisted-directory'" :section="section" :id="`section-${index}`" />
+                    <SectionPolicy v-if="section.type === 'privacy-policy'" :section="section" :id="`section-${index}`" />
+                    <SectionFaq v-if="section.type === 'faqs-list'" :section="section" :id="`section-${index}`" />
+                    <SectionIncoterms v-if="section.type === 'incoterms-list'" :section="section" :id="`section-${index}`" />
+                    <SectionFreightCalculator v-if="section.type === 'freight-tools'" :section="section" :id="`section-${index}`" />
+                    <SectionContactForm v-if="section.type === 'contact-form'" :section="section" :id="`section-${index}`" />
+                    <SectionDefault v-if="section.type === 'about-right-image' || section.type === 'about-left-image' || section.type === 'about-no-image'" :section="section" :id="`section-${index}`" />
                 </template>
             </div>
 
-            <div v-else-if="(!(page as Page).pageSections || (page as Page).pageSections.length === 0) && (!sliders || sliders.length === 0)" 
-                 class="text-center py-20">
+            <div v-else-if="(!(page as Page).pageSections || (page as Page).pageSections.length === 0) && (!sliders || sliders.length === 0)" class="text-center py-20">
                 <div class="text-gray-500 dark:text-gray-400">
                     <Icon name="heroicons:inbox" class="w-20 h-20 mx-auto mb-4 opacity-50" />
                     <p class="text-lg font-medium">لا توجد محتويات في هذه الصفحة بعد</p>
@@ -183,10 +159,50 @@ onMounted(async () => {
             </div>
         </div>
 
-        <div v-else-if="['membership', 'policies', 'terms-and-conditions', 'faq', 'contact', 'events', 'news'].includes(slug as string)">
-            <div class="container my-5 px-6">
-             
+        <!-- ✅ dynamic-page, services, home -->
+        <div v-else-if="slug === 'dynamic-page' || slug === 'services' || slug === 'home'">
+            <div v-if="(page as Page).pageSections && (page as Page).pageSections.length > 0">
+                <template v-for="(section, index) in (page as Page).pageSections as PageSection[]" :key="`section-${section.id || index}`">
+                    <SectionIntro v-if="section.type === 'intro' || section.type === 'grid-home-section'" :section="section" :id="`section-${index}`" />
+                    <SectionEventsGrid v-if="section.type === 'events-grid'" :section="section" :id="`section-${index}`" />
+                    <SectionTeam v-if="section.type === 'team-grid'" :section="section" :id="`section-${index}`" />
+                    <SectionNetwork v-if="section.type === 'network-grid'" :section="section" :id="`section-${index}`" />
+                    <SectionIntroNoTitle v-if="section.type === 'intro-no-title'" :section="section" :id="`section-${index}`" />
+                    <SectionDefaultWithImage v-if="section.type === 'image-banner-section'" :section="section" :id="`section-${index}`" />
+                    <SectionBenefitsGrid v-if="section.type === 'benefits-grid'" :section="section" :id="`section-${index}`" />
+                    <SectionBenefitsList v-if="section.type === 'benefits-list'" :section="section" :id="`section-${index}`" />
+                    <SectionStatus v-if="section.type === 'site-states'" :section="section" :id="`section-${index}`" />
+                    <SectionTestimonials v-if="section.type === 'testimonials-slider'" :section="section" :id="`section-${index}`" />
+                    <SectionPartners v-if="section.type === 'partners-slider'" :section="section" :id="`section-${index}`" />
+                    <SectionCallToAction v-if="section.type === 'cta'" :section="section" :id="`section-${index}`" />
+                    <SectionEvents v-if="section.type === 'events-list'" :section="section" :id="`section-${index}`" />
+                    <SectionDirectory v-if="section.type === 'network-directory'" :section="section" :id="`section-${index}`" />
+                    <SectionDirectoryBlacklist v-if="section.type === 'blacklisted-directory'" :section="section" :id="`section-${index}`" />
+                    <SectionPolicy v-if="section.type === 'privacy-policy'" :section="section" :id="`section-${index}`" />
+                    <SectionFaq v-if="section.type === 'faqs-list'" :section="section" :id="`section-${index}`" />
+                    <SectionIncoterms v-if="section.type === 'incoterms-list'" :section="section" :id="`section-${index}`" />
+                    <SectionFreightCalculator v-if="section.type === 'freight-tools'" :section="section" :id="`section-${index}`" />
+                    <SectionContactForm v-if="section.type === 'contact-form'" :section="section" :id="`section-${index}`" />
+                    <SectionDefault v-if="section.type === 'about-right-image' || section.type === 'about-left-image' || section.type === 'about-no-image'" :section="section" :id="`section-${index}`" />
+                </template>
             </div>
+        </div>
+
+        <!-- ✅ صفحة network-directory مباشرة -->
+        <div v-else-if="slug === 'network-directory'">
+            <div class="container mx-auto px-4 py-8">
+                <div class="text-center mb-8">
+                    <h1 class="text-3xl font-bold text-primary">Network Directory</h1>
+                    <p class="text-gray-600 mt-2">Browse through our network of members</p>
+                </div>
+                <!-- ✅ عرض الـ Directory مباشرة -->
+                <NetworkDirectory :section="null" />
+            </div>
+        </div>
+
+        <!-- باقي الصفحات -->
+        <div v-else-if="['membership', 'policies', 'terms-and-conditions', 'faq', 'contact', 'events', 'news'].includes(slug as string)">
+            <div class="container my-5 px-6"></div>
             <SectionGuideLine v-if="slug === 'membership'" />
             <SectionPolicy v-if="slug === 'policies'" />
             <SectionTOS v-if="slug === 'terms-and-conditions'" />
@@ -194,55 +210,6 @@ onMounted(async () => {
             <SectionContactForm v-if="slug === 'contact'" />
             <SectionEvents v-if="slug === 'events'" :page="page as Page" />
             <SectionArticles v-if="slug === 'news'" />
-        </div>
-
-        <div v-else-if="slug === 'dynamic-page' || slug === 'services' || slug === 'home'">
-            <div v-if="(page as Page).pageSections && (page as Page).pageSections.length > 0">
-                <template v-for="(section, index) in (page as Page).pageSections as PageSection[]" :key="`section-${section.id || index}`">
-                    <SectionIntro v-if="section.type === 'intro' || section.type === 'grid-home-section'" 
-                                 :section="section" :id="`section-${index}`" />
-                    <SectionEventsGrid v-if="section.type === 'events-grid'" 
-                                      :section="section" :id="`section-${index}`" />
-                    <SectionTeam v-if="section.type === 'team-grid'" 
-                                :section="section" :id="`section-${index}`" />
-                    <SectionNetwork v-if="section.type === 'network-grid'" 
-                                   :section="section" :id="`section-${index}`" />
-                    <SectionIntroNoTitle v-if="section.type === 'intro-no-title'" 
-                                       :section="section" :id="`section-${index}`" />
-                    <SectionDefaultWithImage v-if="section.type === 'image-banner-section'" 
-                                            :section="section" :id="`section-${index}`" />
-                    <SectionBenefitsGrid v-if="section.type === 'benefits-grid'" 
-                                        :section="section" :id="`section-${index}`" />
-                    <SectionBenefitsList v-if="section.type === 'benefits-list'" 
-                                        :section="section" :id="`section-${index}`" />
-                    <SectionStatus v-if="section.type === 'site-states'" 
-                                  :section="section" :id="`section-${index}`" />
-                    <SectionTestimonials v-if="section.type === 'testimonials-slider'" 
-                                        :section="section" :id="`section-${index}`" />
-                    <SectionPartners v-if="section.type === 'partners-slider'" 
-                                    :section="section" :id="`section-${index}`" />
-                    <SectionCallToAction v-if="section.type === 'cta'" 
-                                        :section="section" :id="`section-${index}`" />
-                    <SectionEvents v-if="section.type === 'events-list'" 
-                                  :section="section" :id="`section-${index}`" />
-                    <SectionDirectory v-if="section.type === 'network-directory'" 
-                                     :section="section" :id="`section-${index}`" />
-                    <SectionDirectoryBlacklist v-if="section.type === 'blacklisted-directory'" 
-                                              :section="section" :id="`section-${index}`" />
-                    <SectionPolicy v-if="section.type === 'privacy-policy'" 
-                                  :section="section" :id="`section-${index}`" />
-                    <SectionFaq v-if="section.type === 'faqs-list'" 
-                               :section="section" :id="`section-${index}`" />
-                    <SectionIncoterms v-if="section.type === 'incoterms-list'" 
-                                     :section="section" :id="`section-${index}`" />
-                    <SectionFreightCalculator v-if="section.type === 'freight-tools'" 
-                                             :section="section" :id="`section-${index}`" />
-                    <SectionContactForm v-if="section.type === 'contact-form'" 
-                                       :section="section" :id="`section-${index}`" />
-                    <SectionDefault v-if="section.type === 'about-right-image' || section.type === 'about-left-image' || section.type === 'about-no-image'" 
-                                   :section="section" :id="`section-${index}`" />
-                </template>
-            </div>
         </div>
 
         <!-- صفحة غير معروفة -->
@@ -254,14 +221,12 @@ onMounted(async () => {
                 </div>
             </div>
         </div>
-
     </div>
 
     <!-- Loading State -->
     <div v-else-if="status === 'pending'" class="flex justify-center items-center min-h-screen">
         <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
     </div>
-
 </template>
 
 <style scoped>

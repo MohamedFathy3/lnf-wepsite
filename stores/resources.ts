@@ -1,3 +1,5 @@
+import type { Country, City, PublicSetting, Service, GuideLine, FAQItem } from "~/types";
+
 export const useResourceStore = defineStore('resource', () => {
     const countries = ref<Country[]>();
     const cities = ref<City[]>();

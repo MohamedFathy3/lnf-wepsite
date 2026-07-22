@@ -7,6 +7,7 @@ const props = defineProps<{
     canEdit: boolean;
     canDelete: boolean;
 }>();
+
 const titles = ref([
     { value: 'mr', name: 'Mr' },
     { value: 'ms', name: 'Ms' },
@@ -29,8 +30,9 @@ const item = ref({
     birthDate: null,
     jobTitle: null,
 });
+
 const rules = ref({
-    id: { required },
+    id: {},
     image: {},
     title: { required },
     name: { required },
@@ -39,11 +41,10 @@ const rules = ref({
     jobTitle: { required },
     phone: { required },
     phoneKeyId: { required, numeric },
-    cell: { required },
-    phoneKey: {},
-    cellKey: {},
-    cellKeyId: { required, numeric },
+    cell: {},
+    cellKeyId: { numeric },
 });
+
 const resetItemValues = async () => {
     item.value = {
         id: null,
@@ -61,6 +62,7 @@ const resetItemValues = async () => {
         birthDate: null,
     };
 };
+
 const v$ = useVuelidate(rules, item);
 
 async function closeModal() {
@@ -69,55 +71,64 @@ async function closeModal() {
     await resetItemValues();
 }
 
-const fetchItem = async () => {
-    const { data, error } = await useApiFetch(`/api/member/contact-person/${props.person.id}`, {
-        transform: (data) => (data as ApiResponse).data as ContactPerson,
-        lazy: true,
-    });
-    if (data.value) {
-        item.value = data.value as ContactPerson;
-    }
-    if (error.value) {
-        useToast({ title: 'Error', message: (data.value as ApiResponse).message, type: 'error', duration: 5000 });
-    }
-};
-
 async function openModal() {
     formLoading.value = true;
-    await fetchItem();
+    // تعبئة البيانات من props.person
+    item.value = {
+        id: props.person.id,
+        title: props.person.title,
+        name: props.person.name || `${props.person.firstName || ''} ${props.person.lastName || ''}`.trim(),
+        email: props.person.email,
+        jobTitle: props.person.jobTitle || props.person.job_title,
+        phone: props.person.phone || props.person.phoneNumber,
+        phoneKeyId: props.person.phoneKeyId,
+        phoneKey: props.person.phoneKey,
+        cell: props.person.cell || props.person.cellNumber || props.person.cell_number,
+        cellKeyId: props.person.cellKeyId,
+        cellKey: props.person.cellKey,
+        birthDate: props.person.birthDate || props.person.birth_date,
+        image: props.person.image || null,
+    };
     formLoading.value = false;
     isOpen.value = true;
 }
 
 const userStore = useUserStore();
 const resources = useResourceStore();
-const updateContactPerson = async (id: number | null) => {
+
+const updateContactPerson = async () => {
     formLoading.value = true;
-    if (!id) {
-        formLoading.value = false;
-        useToast({
-            title: 'Error',
-            message: 'Something went wrong, please contact WSA Team',
-            type: 'error',
-            duration: 5000,
-        });
-        return false;
-    }
     const result = await v$.value.$validate();
     if (!result) {
         formLoading.value = false;
         useToast({ title: 'Error', message: 'Please fill all required fields', type: 'error', duration: 5000 });
         return false;
     }
-    const { data, error } = await useApiFetch(`/api/member/contact-person/${id}`, {
+
+    // تحضير البيانات للـ API
+    const payload = {
+        title: item.value.title,
+        name: item.value.name,
+        email: item.value.email,
+        job_title: item.value.jobTitle,
+        birth_date: item.value.birthDate,
+        phone: item.value.phone,
+        phone_key_id: item.value.phoneKeyId,
+        cell_number: item.value.cell,
+        cell_key_id: item.value.cellKeyId,
+        image: item.value.image,
+    };
+
+    const { data, error } = await useApiFetch(`/api/contact-person-network/${props.person.id}`, {
         method: 'PUT',
-        body: item.value,
+        body: payload,
         lazy: true,
     });
+
     if (data.value) {
         useToast({
             title: 'Success',
-            message: 'Contact Person Update Successfully',
+            message: 'Contact Person Updated Successfully',
             type: 'success',
             duration: 5000,
         });
@@ -125,15 +136,17 @@ const updateContactPerson = async (id: number | null) => {
         await closeModal();
     }
     if (error.value) {
-        useToast({ title: 'Error', message: error.value.message, type: 'error', duration: 5000 });
+        useToast({ title: 'Error', message: error.value.message || 'Something went wrong', type: 'error', duration: 5000 });
+        formLoading.value = false;
     }
 };
 
 const deleteContactPerson = async (id: number) => {
     const confirmed = confirm('Are you sure you want to delete this person?');
     if (confirmed) {
-        const { data, error } = await useApiFetch(`/api/member/contact-person/delete/${id}`, {
+        const { data, error } = await useApiFetch(`/api/contact-person-network/delete`, {
             method: 'DELETE',
+            body: { items: [id] }
         });
         if (data.value) {
             useToast({
@@ -145,24 +158,23 @@ const deleteContactPerson = async (id: number) => {
             await userStore.fetchAuthUser();
         }
         if (error.value) {
-            useToast({ title: 'Error', message: error.value.message, type: 'error', duration: 5000 });
-            formLoading.value = false;
+            useToast({ title: 'Error', message: error.value.message || 'Something went wrong', type: 'error', duration: 5000 });
         }
     }
 };
 </script>
 
 <template>
-    <div :class="[(!props.canEdit || !props.canDelete) && 'pb-3', 'pt-3 overflow-hidden bg-white rounded-2xl border text-sm intro-x group']" class="">
+    <div :class="[(!props.canEdit || !props.canDelete) && 'pb-3', 'pt-3 overflow-hidden bg-white rounded-2xl border text-sm intro-x group']">
         <div class="px-3 relative border-b pb-3 border-dashed">
             <div class="flex items-start gap-3">
                 <NuxtImg v-if="props.person.imageUrl" :src="props.person.imageUrl" class="size-12 rounded-full ring-4 ring-slate-400/25 object-cover" />
                 <div>
                     <div class="flex items-center gap-1">
                         <div class="font-light capitalize">{{ props.person.title }}</div>
-                        <div class="truncate">{{ props.person.name }}</div>
+                        <div class="truncate font-medium">{{ props.person.name || props.person.firstName + ' ' + props.person.lastName }}</div>
                     </div>
-                    <div class="font-light text-xs mt-1 truncate">{{ props.person.jobTitle }}</div>
+                    <div class="font-light text-xs mt-1 truncate">{{ props.person.jobTitle || props.person.job_title }}</div>
                 </div>
             </div>
         </div>
@@ -171,18 +183,18 @@ const deleteContactPerson = async (id: number) => {
                 <div class="font-light">Email</div>
                 <div class="truncate">{{ props.person.email }}</div>
             </div>
-            <div v-if="props.person.phone" class="flex items-center justify-between gap-5 py-2">
+            <div v-if="props.person.phone || props.person.phoneNumber" class="flex items-center justify-between gap-5 py-2">
                 <div class="font-light">Phone Number</div>
                 <div class="flex items-center gap-1">
-                    <span>+{{ props.person.phoneKey }}</span>
-                    <span>{{ props.person.phone }}</span>
+                    <span v-if="props.person.phoneKey">+{{ props.person.phoneKey }}</span>
+                    <span>{{ props.person.phone || props.person.phoneNumber }}</span>
                 </div>
             </div>
-            <div v-if="props.person.cell" class="flex items-center justify-between gap-5 py-2">
+            <div v-if="props.person.cell || props.person.cellNumber" class="flex items-center justify-between gap-5 py-2">
                 <div class="font-light">Cell Phone</div>
                 <div class="flex items-center gap-1">
-                    <span>+{{ props.person.cellKey }}</span>
-                    <span>{{ props.person.cell }}</span>
+                    <span v-if="props.person.cellKey">+{{ props.person.cellKey }}</span>
+                    <span>{{ props.person.cell || props.person.cellNumber }}</span>
                 </div>
             </div>
         </div>
@@ -205,10 +217,12 @@ const deleteContactPerson = async (id: number) => {
             </button>
         </div>
     </div>
+
+    <!-- Edit Modal -->
     <TheModal :open-modal="isOpen" size="4xl" @close-modal="closeModal()">
         <template #header>
             <div class="flex justify-between items-center">
-                <div class="font-normal">Update {{ props.person.name }}</div>
+                <div class="font-normal">Update {{ props.person.name || props.person.firstName }}</div>
                 <Icon class="w-8 h-8 opacity-50 cursor-pointer hover:opacity-100 ease-in-out duration-300" name="solar:close-square-outline" @click="closeModal" />
             </div>
         </template>
@@ -277,7 +291,7 @@ const deleteContactPerson = async (id: number) => {
                     <Icon :name="formLoading ? 'svg-spinners:3-dots-fade' : 'solar:close-circle-linear'" class="w-5 h-5 mr-2" />
                     <span>Close</span>
                 </button>
-                <button :disabled="formLoading" class="btn-rounded btn-sm btn btn-primary px-4" type="button" @click="updateContactPerson(item.id)">
+                <button :disabled="formLoading" class="btn-rounded btn-sm btn btn-primary px-4" type="button" @click="updateContactPerson()">
                     <Icon :name="formLoading ? 'svg-spinners:3-dots-fade' : 'solar:check-circle-broken'" class="w-5 h-5 mr-2" />
                     <span v-html="'Update'" />
                 </button>

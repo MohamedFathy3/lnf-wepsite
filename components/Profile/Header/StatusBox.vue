@@ -1,3 +1,4 @@
+<!-- components/ProfileHeaderStatusBox.vue -->
 <script lang="ts" setup>
 const props = withDefaults(
     defineProps<{
@@ -26,8 +27,8 @@ const props = withDefaults(
             'text-center p-3 text-sm font-light rounded-2xl w-full min-h-24 flex flex-col items-center place-content-center gap-2 ring-4 !ring-slate-200/10',
         ]"
     >
-        <div v-if="props.title" class="font-light">{{ props.title }}</div>
+        <div v-if="props.title" class="font-light text-xs uppercase tracking-wider opacity-80">{{ props.title }}</div>
         <Icon v-if="props.icon" :name="props.icon" class="size-6 mx-auto" />
-        <div v-if="props.value" class="font-medium">{{ props.value }}</div>
+        <div v-if="props.value" class="font-medium text-base capitalize">{{ props.value }}</div>
     </div>
 </template>

@@ -182,6 +182,85 @@ type ApplicationFormType = {
     detectedCountryId: number | null;
 };
 
+// types/user.ts
+export interface ContactPerson {
+    id: number;
+    title: string;
+    member_network_id?: number;
+    userId?: number;
+    // من API /api/member/current
+    firstName?: string;
+    lastName?: string;
+    name?: string; // للتوافق
+    email: string;
+    jobTitle?: string;
+    job_title?: string;
+    birth_date?: string;
+    birthDate?: string;
+    phoneNumber?: string;
+    phone?: string;
+    cellNumber?: string;
+    cell_number?: string;
+    cell?: string;
+    phoneKeyId?: number;
+    phoneKey?: string;
+    cellKeyId?: number;
+    cellKey?: string;
+    imageUrl?: string;
+    image?: {
+        id: number;
+        name: string;
+        fullUrl: string;
+    } | number;
+    passportImageUrl?: string;
+    passport?: {
+        id: number;
+        name: string;
+        fullUrl: string;
+    };
+    network?: User;
+    deleted?: boolean;
+    deletedAt?: string;
+    createdAt?: string;
+    updatedAt?: string;
+}
+
+// Helper function لتحويل البيانات
+export function normalizeContactPerson(person: any): ContactPerson {
+    return {
+        id: person.id,
+        title: person.title,
+        member_network_id: person.member_network_id || person.userId,
+        userId: person.userId,
+        name: person.name || `${person.firstName || ''} ${person.lastName || ''}`.trim(),
+        firstName: person.firstName,
+        lastName: person.lastName,
+        email: person.email,
+        jobTitle: person.jobTitle || person.job_title,
+        job_title: person.job_title || person.jobTitle,
+        birth_date: person.birth_date || person.birthDate,
+        birthDate: person.birthDate || person.birth_date,
+        phone: person.phone || person.phoneNumber,
+        phoneNumber: person.phoneNumber || person.phone,
+        cell: person.cell || person.cellNumber || person.cell_number,
+        cellNumber: person.cellNumber || person.cell_number || person.cell,
+        cell_number: person.cell_number || person.cellNumber || person.cell,
+        phoneKeyId: person.phoneKeyId,
+        phoneKey: person.phoneKey,
+        cellKeyId: person.cellKeyId,
+        cellKey: person.cellKey,
+        imageUrl: person.imageUrl,
+        image: person.image,
+        passportImageUrl: person.passportImageUrl,
+        passport: person.passport,
+        network: person.network,
+        deleted: person.deleted,
+        deletedAt: person.deletedAt,
+        createdAt: person.createdAt,
+        updatedAt: person.updatedAt,
+    };
+}
+
 type ContactPersons = {
     title: string | null;
     email: string | null;

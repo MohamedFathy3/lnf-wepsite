@@ -22,7 +22,6 @@ const rules = reactive({
 });
 
 const v$ = useVuelidate(rules, loginForm);
-
 const formLoading = ref(false);
 
 useSeoMeta({
@@ -44,13 +43,14 @@ async function login() {
 
 const data = ref({
     name: 'Login',
-des: `
-<span class="text-primary">Empower</span>
-Your Global Logistics Network
-<br><span class="block mt-3">
-with <span class="text-primary">LNF</span>
-</span>
-`,});
+    des: `
+    <span class="text-primary">Empower</span>
+    Your Global Logistics
+    <br><span class="block mt-3">
+    with <span class="text-primary">LNF</span>
+    </span>
+    `,
+});
 </script>
 
 <template>

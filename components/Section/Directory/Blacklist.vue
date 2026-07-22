@@ -98,7 +98,7 @@ const changePage = async (value: number) => {
                             <tr class="uppercase">
                                 <th class="text-left">Name</th>
                                 <th class="text-left">Country</th>
-                                <th class="text-left">WSA ID</th>
+                                <th class="text-left">LNF ID</th>
                                 <th class="text-right">Status</th>
                             </tr>
                         </thead>

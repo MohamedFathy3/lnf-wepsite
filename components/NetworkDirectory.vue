@@ -21,21 +21,9 @@ const sortingDirections = [
     { name: 'Direction Z : A', id: 'desc' },
 ];
 
-const serverParams = ref<UserServerParams>({
-    filters: {
-        name: null,
-        city: null,
-        countryId: null,
-        userId: null, // ✅ إضافة فلتر الـ User
-    },
-    networks: [1],
-    orderBy: 'type_company',
-    orderByDirection: 'asc',
-    perPage: 9,
-    page: 1,
-});
+const userStore = useUserStore();
 
-// ✅ جلب الـ Users للـ Select
+// ✅ جلب الـ Users للـ Select - بإضافة الـ token
 const userSearchParams = ref({
     filters: {},
     orderBy: 'id',
@@ -46,12 +34,31 @@ const userSearchParams = ref({
     deleted: false,
 });
 
+// ✅ إضافة headers عشان نمرر الـ token
 const { data: usersData } = await useApiFetch('/api/user/index', {
     method: 'POST',
     body: userSearchParams,
     lazy: true,
+    headers: {
+        Authorization: `Bearer ${userStore.token}`
+    }
 });
 
+const serverParams = ref({
+    filters: {
+        name: null,
+        city: null,
+        countryId: null,
+        userId: null,
+    },
+    networks: [1],
+    orderBy: 'type_company',
+    orderByDirection: 'asc',
+    perPage: 9,
+    page: 1,
+});
+
+// ✅ الـ Directory API - بإضافة الـ token
 const {
     data: directory,
     status,
@@ -62,6 +69,9 @@ const {
     method: 'POST',
     body: serverParams,
     immediate: false,
+    headers: {
+        Authorization: `Bearer ${userStore.token}`
+    }
 });
 
 const isLoading = ref(false);
@@ -118,8 +128,6 @@ const changePage = async (value: number) => {
     await applyFilter();
 };
 
-const userStore = useUserStore();
-
 const headerSettings = {
     loginButtonActive: useSettingValue('login_button_active') ?? true,
     registerButtonActive: useSettingValue('register_button_active') ?? true,
@@ -138,14 +146,22 @@ const headerSettings = {
         icon: 'solar:shield-star-outline',
     },
 };
+
+// تشغيل البحث تلقائياً عند التحميل
+onMounted(async () => {
+    if (userStore.token) {
+        await applyFilter();
+    }
+});
 </script>
 
 <template>
     <div class="flex flex-col gap-5">
+        <!-- ✅ حالة تسجيل الدخول -->
         <template v-if="userStore.token">
+            <!-- فلتر البحث -->
             <div class="p-5 bg-slate-50/75 rounded-3xl border">
                 <form class="grid lg:grid-cols-12 gap-5" @submit.prevent="applyFilter">
-                    <!-- الدولة - 3 أعمدة -->
                     <FormSelectInput
                         v-model="serverParams.filters.countryId"
                         :clearable="false"
@@ -159,7 +175,6 @@ const headerSettings = {
                         placeholder="Country *"
                     />
 
-                    <!-- المستخدم (Network) - 3 أعمدة -->
                     <FormSelectInput
                         v-model="serverParams.filters.userId"
                         :disabled="isLoading"
@@ -169,10 +184,9 @@ const headerSettings = {
                         imgvalue="imageUrl"
                         secondlabelvalue="email"
                         class="lg:col-span-3"
-                        placeholder="User (Network)"
+                        placeholder="(Network)"
                     />
 
-                    <!-- المدينة - 2 أعمدة -->
                     <FormTextInput 
                         v-model="serverParams.filters.city" 
                         :disabled="isLoading" 
@@ -181,7 +195,6 @@ const headerSettings = {
                         rounded 
                     />
 
-                    <!-- اسم الشركة - 2 أعمدة -->
                     <FormTextInput 
                         v-model="serverParams.filters.name" 
                         :disabled="isLoading" 
@@ -190,42 +203,38 @@ const headerSettings = {
                         rounded 
                     />
 
-                    <!-- الترتيب - 2 أعمدة -->
                     <FormSelectInput 
                         v-model="serverParams.orderBy" 
                         :disabled="isLoading" 
                         :select-data="sortByList" 
                         keyvalue="id" 
                         labelvalue="name" 
-                        class="lg:col-span-3"
+                        class="lg:col-span-2"
                         placeholder="Sort by" 
                     />
 
-                    <!-- اتجاه الترتيب - 2 أعمدة -->
                     <FormSelectInput
                         v-model="serverParams.orderByDirection"
                         :disabled="isLoading"
                         :select-data="sortingDirections"
                         keyvalue="id"
                         labelvalue="name"
-                        class="lg:col-span-3"
+                        class="lg:col-span-2"
                         placeholder="Sort Direction"
                     />
 
-                    <!-- زر Submit - 3 أعمدة -->
                     <button 
                         :disabled="isLoading" 
-                        class="lg:col-span-3 btn btn-primary gap-2 font-light" 
+                        class="lg:col-span-2 btn btn-primary gap-2 font-light" 
                         type="submit"
                     >
                         <Icon class="size-5" name="solar:rounded-magnifer-linear" />
                         <span>Submit</span>
                     </button>
 
-                    <!-- زر Reset - 3 أعمدة -->
                     <button 
                         :disabled="isLoading" 
-                        class="lg:col-span-3 btn btn-secondary gap-2 font-light" 
+                        class="lg:col-span-2 btn btn-secondary gap-2 font-light" 
                         type="button" 
                         @click="resetFilter"
                     >
@@ -235,9 +244,11 @@ const headerSettings = {
                 </form>
             </div>
 
+            <!-- النتائج -->
             <div class="p-5 bg-slate-50/75 rounded-3xl border">
                 <div v-if="searchInit">
                     <template v-if="status !== 'pending'">
+                        <!-- Desktop Table -->
                         <div class="md:block hidden">
                             <table class="table table-report font-light text-sm">
                                 <thead>
@@ -250,72 +261,62 @@ const headerSettings = {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <template v-if="searchInit">
-                                        <template v-if="rows.length > 0">
-                                            <tr v-for="row in rows" :key="row.id">
-                                                <td>
-                                                    <div class="flex items-center gap-3">
-                                                        <NuxtImg :alt="row.name" :src="row.imageUrl" :title="row.name" class="h-12 !rounded-md w-24 object-contain p-1 shrink-0" />
-                                                        <div class="flex flex-col gap-0.5">
-                                                            <div class="flex items-center gap-1.5">
-                                                                <span class="truncate font-normal 2xl:max-w-64 max-w-44">{{ row.name }}</span>
-                                                            </div>
-                                                            <div class="text-xs opacity-75 mt-0.5 lowercase truncate 2xl:max-w-64 max-w-44">
-                                                                {{ row.email.toLowerCase() }}
-                                                            </div>
-                                                            <!-- ✅ عرض المستخدم المرتبط -->
-                                                            <div v-if="row.user" class="text-xs opacity-50 flex items-center gap-1">
-                                                                <Icon name="solar:user-circle-outline" class="size-3" />
-                                                                {{ row.user.name }}
-                                                            </div>
+                                    <template v-if="rows.length > 0">
+                                        <tr v-for="row in rows" :key="row.id">
+                                            <td>
+                                                <div class="flex items-center gap-3">
+                                                    <NuxtImg :alt="row.name" :src="row.imageUrl" :title="row.name" class="h-12 !rounded-md w-24 object-contain p-1 shrink-0" />
+                                                    <div class="flex flex-col gap-0.5">
+                                                        <div class="flex items-center gap-1.5">
+                                                            <span class="truncate font-normal 2xl:max-w-64 max-w-44">{{ row.name }}</span>
+                                                        </div>
+                                                        <div class="text-xs opacity-75 mt-0.5 lowercase truncate 2xl:max-w-64 max-w-44">
+                                                            {{ row.email.toLowerCase() }}
+                                                        </div>
+                                                        <div v-if="row.user" class="text-xs opacity-50 flex items-center gap-1">
+                                                            <Icon name="solar:user-circle-outline" class="size-3" />
+                                                            {{ row.user.name }}
                                                         </div>
                                                     </div>
-                                                </td>
-                                                <td>
-                                                    <div class="flex items-center gap-2">
-                                                        <NuxtImg :src="row.country.imageUrl" class="h-10 !rounded-md w-16 object-cover shrink-0 mr-1.5" />
-                                                        <div>
-                                                            <div class="truncate font-normal 2xl:max-w-64 max-w-44">
-                                                                {{ row.country.name }}
-                                                            </div>
-                                                            <div class="capitalize font-light text-xs opacity-80">
-                                                                {{ row.city.toLowerCase() }}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td>
-                                                    <span class="text-xs bg-slate-100 px-2 py-1 rounded-full">
-                                                        {{ row.type || 'N/A' }}
-                                                    </span>
-                                                </td>
-                                                <td>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="flex items-center gap-2">
+                                                    <NuxtImg :src="row.country.imageUrl" class="h-10 !rounded-md w-16 object-cover shrink-0 mr-1.5" />
                                                     <div>
-                                                        <ProfileMemberType :status="row.type_company as string" />
+                                                        <div class="truncate font-normal 2xl:max-w-64 max-w-44">
+                                                            {{ row.country.name }}
+                                                        </div>
+                                                        <div class="capitalize font-light text-xs opacity-80">
+                                                            {{ row.city.toLowerCase() }}
+                                                        </div>
                                                     </div>
-                                                </td>
-                                                <td class="text-right">
-                                                    <NuxtLink :href="row.wsaId === (userStore.user as User).wsaId ? '/dashboard' : '/member/' + row.wsaId" target="_blank">
-                                                        <button class="btn btn-secondary btn-sm gap-3 font-light px-4" type="button">
-                                                            <Icon class="size-4" name="solar:eye-line-duotone" />
-                                                            View
-                                                        </button>
-                                                    </NuxtLink>
-                                                </td>
-                                            </tr>
-                                        </template>
-                                        <template v-else>
-                                            <tr>
-                                                <td colspan="6">
-                                                    <div class="py-8 font-lg text-center">No members found</div>
-                                                </td>
-                                            </tr>
-                                        </template>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span class="text-xs bg-slate-100 px-2 py-1 rounded-full">
+                                                    {{ row.type || 'N/A' }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <div>
+                                                    <ProfileMemberType :status="row.type_company as string" />
+                                                </div>
+                                            </td>
+                                            <td class="text-right">
+                                                <NuxtLink :href="row.wsaId === (userStore.user as User).wsaId ? '/dashboard' : '/member/' + row.wsaId" target="_blank">
+                                                    <button class="btn btn-secondary btn-sm gap-3 font-light px-4" type="button">
+                                                        <Icon class="size-4" name="solar:eye-line-duotone" />
+                                                        View
+                                                    </button>
+                                                </NuxtLink>
+                                            </td>
+                                        </tr>
                                     </template>
                                     <template v-else>
-                                        <tr v-for="i in serverParams.perPage" :key="i">
+                                        <tr>
                                             <td colspan="6">
-                                                <div class="h-12 !opacity-50" />
+                                                <div class="py-8 font-lg text-center">No members found</div>
                                             </td>
                                         </tr>
                                     </template>
@@ -327,12 +328,7 @@ const headerSettings = {
                         <ul class="block md:hidden space-y-5">
                             <li v-for="row in rows" :key="row.id" class="p-5 bg-white/50 border rounded-xl divide-y divide-dashed text-right">
                                 <div class="py-3 flex items-start justify-between gap-3">
-                                    <NuxtImg
-                                        :alt="row.name"
-                                        :src="row.imageUrl"
-                                        :title="row.name"
-                                        class="ring-4 ring-slate-400/10 h-12 !rounded-md w-24 object-contain p-1 shrink-0 bg-white"
-                                    />
+                                    <NuxtImg :alt="row.name" :src="row.imageUrl" :title="row.name" class="ring-4 ring-slate-400/10 h-12 !rounded-md w-24 object-contain p-1 shrink-0 bg-white" />
                                     <div class="flex flex-col gap-0.5">
                                         <div class="flex items-center gap-1.5">
                                             <span class="truncate font-normal 2xl:max-w-64 max-w-44">{{ row.name }}</span>
@@ -376,43 +372,53 @@ const headerSettings = {
                             </li>
                         </ul>
                     </template>
+                    <div v-else class="text-center py-8">
+                        <Icon name="svg-spinners:3-dots-fade" class="w-8 h-8 mx-auto text-primary" />
+                        <p class="text-sm opacity-50 mt-2">Loading...</p>
+                    </div>
                 </div>
                 <div v-else class="py-8 font-lg text-center bg-white rounded-3xl border border-dashed text-slate-500 font-light">
                     You can search for members using the above form...
                 </div>
             </div>
+
+            <!-- Pagination -->
             <template v-if="searchInit">
                 <TablePagination :page="serverParams.page" :pending="status === 'pending'" :rows="directory as ApiResponse" class="mx-12" @change-page="changePage" />
             </template>
         </template>
 
+        <!-- ✅ حالة عدم تسجيل الدخول -->
         <template v-else>
             <div class="flex flex-col gap-5">
-                <div class="text-center text-lg font-normal opacity-85">Login or Apply for membership to view LNF  Directory</div>
+                <div class="text-center text-lg font-normal opacity-85">
+                    Login or Apply for membership to view <span class="font-bold text-primary">LNF</span> Directory
+                </div>
                 <div class="flex items-center gap-5 place-content-center">
                     <NuxtLink v-if="headerSettings.registerButtonActive" :target="headerSettings.registerButton.target" :to="headerSettings.registerButton.url">
-                        <button :class="'btn  btn-sm px-5 btn-' + headerSettings.registerButton.style">
+                        <button :class="'btn btn-rounded btn-sm px-5 btn-' + headerSettings.registerButton.style">
                             <Icon v-if="headerSettings.registerButton.icon" :name="headerSettings.registerButton.icon" class="size-5 mr-2" />
                             <span>{{ headerSettings.registerButton.label }}</span>
                         </button>
                     </NuxtLink>
                     <NuxtLink v-if="headerSettings.loginButtonActive" :target="headerSettings.loginButton.target" :to="headerSettings.loginButton.url">
-                        <button :class="'btn  btn-sm px-5 btn-' + headerSettings.loginButton.style">
+                        <button :class="'btn btn-rounded btn-sm px-5 btn-' + headerSettings.loginButton.style">
                             <Icon v-if="headerSettings.loginButton.icon" :name="headerSettings.loginButton.icon" class="size-5 mr-2" />
                             <span>{{ headerSettings.loginButton.label }}</span>
                         </button>
                     </NuxtLink>
                 </div>
-                <div class="text-sm mt-12 w-full grow px-6">
+
+                <div class="text-sm mt-12 w-full grow px-6 md:px-12">
                     <div class="grid grid-cols-3 gap-5 items-center justify-between text-left">
                         <div class="p-3">Company Name</div>
                         <div class="p-3">Country</div>
                         <div class="text-right p-3">View</div>
                     </div>
                     <ul class="mt-1.5 space-y-3">
-                        <li
-                            v-for="line in 5"
-                            :key="line"
+                        <li 
+                            v-for="line in 5" 
+                            :key="line" 
                             class="p-3 bg-white border !border-slate-100 rounded-lg uppercase grid grid-cols-3 gap-5 items-center justify-between text-left"
                         >
                             <div class="flex items-center gap-3">
