@@ -53,7 +53,7 @@ const isSectionActive = (section: Policy, idx: number) => {
                 <div id="content-sections" class="prose prose-slate prose-sm space-y-8">
                     <template v-for="section in policies" :key="section.id">
                         <div :id="section.slug" class="section__div">
-                            <div class="font-bold text-3xl">{{ section.title }}</div>
+                            <!-- <div class="font-bold text-3xl">{{ section.title }}</div> -->
                             <div v-html="section.description" />
                         </div>
                     </template>

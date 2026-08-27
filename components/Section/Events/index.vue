@@ -74,14 +74,8 @@ const getPastExhibitions = () => {
                     >
                         <Icon class="size-4 sm:size-5" name="solar:calendar-line-duotone" />
                         <span class="text-sm sm:text-base">{{ tab.name }}</span>
-                        <span v-if="tab.id === 'conferences'" 
-                              class="text-xs bg-white/20 text-white rounded-full px-2 py-0.5">
-                            {{ getConferences().length }}
-                        </span>
-                        <span v-if="tab.id === 'exhibitions'" 
-                              class="text-xs bg-white/20 text-white rounded-full px-2 py-0.5">
-                            {{ getExhibitions().length }}
-                        </span>
+                      
+                       
                     </button>
                 </template>
             </div>
