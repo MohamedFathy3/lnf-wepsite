@@ -50,15 +50,25 @@ const isSectionActive = (section: Policy, idx: number) => {
                         </li>
                     </ul>
                 </div>
-                <div id="content-sections" class="prose prose-slate prose-sm space-y-8">
-                    <template v-for="section in policies" :key="section.id">
-                        <p>The Logistics Network Federation (LNF) brings together established freight forwarding and logistics networks from around the world.</p>
-                        <div :id="section.slug" class="section__div">
-                            <div class="font-bold text-3xl">{{ section.title }}</div>
-                            <div v-html="section.description" />
-                        </div>
-                    </template>
-                </div>
+             <div id="content-sections" class="prose prose-slate prose-sm space-y-8">
+
+    <!-- يظهر مرة واحدة فقط -->
+    <p style="font-weight: 900; font-size: 1.5rem; margin-bottom: 1rem;">
+        The Logistics Network Federation (LNF) brings together established freight forwarding and logistics networks from around the world.
+    </p>
+
+    <!-- Sections -->
+    <template v-for="section in policies" :key="section.id">
+        <div :id="section.slug" class="section__div">
+            <div class="font-bold text-3xl">
+                {{ section.title }}
+            </div>
+
+            <div v-html="section.description"></div>
+        </div>
+    </template>
+
+</div>
             </div>
         </div>
     </div>
