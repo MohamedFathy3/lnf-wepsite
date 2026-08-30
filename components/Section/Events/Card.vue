@@ -127,17 +127,19 @@ function handleResize() {
             
             <!-- عرض معرض الصور إذا وجد -->
             <div v-if="event.gallery && event.gallery.length > 0" class="flex items-center gap-4 p-1 border mt-2 rounded-md overflow-x-auto">
-                <template v-for="(image, index) in event.gallery" :key="image.id">
-                    <div v-if="screenWidth >= 1400 ? index < 12 : screenWidth >= 768 ? index < 8 : index < 4" 
-                         class="group bg-white object-cover w-full h-12 rounded-md border overflow-hidden flex-shrink-0">
-                        <NuxtImg 
-                            :alt="event.title || 'Gallery Image'" 
-                            :src="image.fullUrl" 
-                            class="object-cover rounded-md w-full h-12 inset-0 group-hover:scale-125 ease-in-out duration-300" 
-                            fallback="/images/fallback-image.jpg"
-                        />
-                    </div>
-                </template>
+             <template v-for="(image, index) in event.gallery" :key="image.id">
+  <div
+    v-if="screenWidth >= 1400 ? index < 12 : screenWidth >= 768 ? index < 8 : index < 4"
+    class="group bg-white w-12 h-12 rounded-md border overflow-hidden flex-shrink-0"
+  >
+    <NuxtImg
+      :alt="event.title || 'Gallery Image'"
+      :src="image.fullUrl"
+      class="object-cover w-full h-full rounded-md group-hover:scale-125 ease-in-out duration-300"
+      fallback="/images/fallback-image.jpg"
+    />
+  </div>
+</template>
             </div>
             
             <!-- عرض الأزرار -->
