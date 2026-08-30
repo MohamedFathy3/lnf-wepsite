@@ -10,9 +10,9 @@ const props = withDefaults(
 </script>
 
 <template>
-    <li class="py-2 flex md:flex-row flex-col items-start md:justify-between gap-y-2 gap-x-5">
-        <div v-if="props.title" class="opacity-65">{{ props.title }}:</div>
-        <div class="font-light">
+    <li class="flex flex-col items-start gap-1.5 py-3.5 text-sm sm:flex-row sm:justify-between sm:gap-6">
+        <div v-if="props.title" class="shrink-0 text-xs font-medium uppercase tracking-[0.12em] text-slate-400">{{ props.title }}</div>
+        <div class="min-w-0 max-w-full break-words text-left font-medium text-slate-700 sm:text-right">
             <slot />
         </div>
     </li>

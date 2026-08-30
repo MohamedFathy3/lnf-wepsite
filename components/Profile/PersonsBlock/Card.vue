@@ -146,7 +146,7 @@ const deleteContactPerson = async (id: number) => {
     if (confirmed) {
         const { data, error } = await useApiFetch(`/api/contact-person-network/delete`, {
             method: 'DELETE',
-            body: { items: [id] }
+            body: { items: [id] },
         });
         if (data.value) {
             useToast({
@@ -165,33 +165,41 @@ const deleteContactPerson = async (id: number) => {
 </script>
 
 <template>
-    <div :class="[(!props.canEdit || !props.canDelete) && 'pb-3', 'pt-3 overflow-hidden bg-white rounded-2xl border text-sm intro-x group']">
-        <div class="px-3 relative border-b pb-3 border-dashed">
-            <div class="flex items-start gap-3">
-                <NuxtImg v-if="props.person.imageUrl" :src="props.person.imageUrl" class="size-12 rounded-full ring-4 ring-slate-400/25 object-cover" />
-                <div>
-                    <div class="flex items-center gap-1">
-                        <div class="font-light capitalize">{{ props.person.title }}</div>
-                        <div class="truncate font-medium">{{ props.person.name || props.person.firstName + ' ' + props.person.lastName }}</div>
+    <div
+        :class="[
+            (!props.canEdit || !props.canDelete) && 'pb-3',
+            'overflow-hidden rounded-2xl border border-slate-200 bg-slate-50/50 text-sm intro-x group transition duration-300 hover:border-primary/20 hover:shadow-md',
+        ]"
+    >
+        <div class="relative border-b border-slate-200 bg-white px-4 py-4">
+            <div class="flex items-center gap-3">
+                <NuxtImg v-if="props.person.imageUrl" :src="props.person.imageUrl" class="size-12 rounded-2xl object-cover ring-1 ring-slate-200" />
+                <div v-else class="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                    <Icon class="size-6" name="solar:user-linear" />
+                </div>
+                <div class="min-w-0">
+                    <div class="flex min-w-0 items-center gap-1.5">
+                        <div class="shrink-0 text-xs font-medium uppercase tracking-wide text-slate-400">{{ props.person.title }}</div>
+                        <div class="truncate font-semibold text-slate-800">{{ props.person.name || props.person.firstName + ' ' + props.person.lastName }}</div>
                     </div>
-                    <div class="font-light text-xs mt-1 truncate">{{ props.person.jobTitle || props.person.job_title }}</div>
+                    <div class="mt-1 truncate text-xs text-slate-500">{{ props.person.jobTitle || props.person.job_title }}</div>
                 </div>
             </div>
         </div>
-        <div class="px-3 divide-y divide-dashed">
-            <div class="flex items-center justify-between gap-5 py-2">
-                <div class="font-light">Email</div>
-                <div class="truncate">{{ props.person.email }}</div>
+        <div class="divide-y divide-slate-200/80 px-4">
+            <div class="flex items-center justify-between gap-4 py-3">
+                <div class="text-xs font-medium uppercase tracking-wide text-slate-400">Email</div>
+                <div class="max-w-[65%] truncate text-right font-medium text-slate-700">{{ props.person.email }}</div>
             </div>
-            <div v-if="props.person.phone || props.person.phoneNumber" class="flex items-center justify-between gap-5 py-2">
-                <div class="font-light">Phone Number</div>
+            <div v-if="props.person.phone || props.person.phoneNumber" class="flex items-center justify-between gap-4 py-3">
+                <div class="text-xs font-medium uppercase tracking-wide text-slate-400">Phone</div>
                 <div class="flex items-center gap-1">
                     <span v-if="props.person.phoneKey">+{{ props.person.phoneKey }}</span>
                     <span>{{ props.person.phone || props.person.phoneNumber }}</span>
                 </div>
             </div>
-            <div v-if="props.person.cell || props.person.cellNumber" class="flex items-center justify-between gap-5 py-2">
-                <div class="font-light">Cell Phone</div>
+            <div v-if="props.person.cell || props.person.cellNumber" class="flex items-center justify-between gap-4 py-3">
+                <div class="text-xs font-medium uppercase tracking-wide text-slate-400">Cell phone</div>
                 <div class="flex items-center gap-1">
                     <span v-if="props.person.cellKey">+{{ props.person.cellKey }}</span>
                     <span>{{ props.person.cell || props.person.cellNumber }}</span>
@@ -201,7 +209,7 @@ const deleteContactPerson = async (id: number) => {
         <div v-if="props.canEdit || props.canDelete" class="flex items-center">
             <button
                 v-if="props.canEdit"
-                class="transition-all flex items-center place-content-center gap-3 w-full bg-primary font-light text-sm text-white cursor-pointer hover:bg-opacity-75 text-center p-2"
+                class="flex w-full cursor-pointer items-center place-content-center gap-2 bg-primary p-3 text-center text-sm font-medium text-white transition-all hover:bg-primary/85"
                 @click="openModal"
             >
                 <Icon class="size-4 shrink-0" name="solar:pen-new-round-outline" />
@@ -209,7 +217,7 @@ const deleteContactPerson = async (id: number) => {
             </button>
             <button
                 v-if="props.canDelete"
-                class="transition-all flex items-center place-content-center gap-3 w-full bg-danger font-light text-sm text-white cursor-pointer hover:bg-opacity-75 text-center p-2"
+                class="flex w-full cursor-pointer items-center place-content-center gap-2 bg-danger p-3 text-center text-sm font-medium text-white transition-all hover:bg-danger/85"
                 @click="deleteContactPerson(props.person.id)"
             >
                 <Icon class="size-4 shrink-0" name="solar:close-circle-outline" />
@@ -247,7 +255,15 @@ const deleteContactPerson = async (id: number) => {
                     <FormTextInput v-model="item.name" :errors="v$.name.$errors" class="lg:col-span-8" label="Name" name="name" placeholder="Name" />
                     <FormTextInput v-model="item.jobTitle" :errors="v$.jobTitle.$errors" class="lg:col-span-6" label="Job Title" name="job-title" placeholder="Job Title" />
                     <FormTextInput v-model="item.email" :errors="v$.email.$errors" class="lg:col-span-6" label="Email" name="email" placeholder="Email" />
-                    <FormDatePicker v-model="item.birthDate" :errors="v$.birthDate.$errors" :time-picker="false" class="lg:col-span-12" label="Birth Date" name="birth-date" placeholder="Birth Date" />
+                    <FormDatePicker
+                        v-model="item.birthDate"
+                        :errors="v$.birthDate.$errors"
+                        :time-picker="false"
+                        class="lg:col-span-12"
+                        label="Birth Date"
+                        name="birth-date"
+                        placeholder="Birth Date"
+                    />
                 </div>
                 <div class="lg:col-span-12 grid lg:grid-cols-12 gap-5">
                     <FormSelectInput

@@ -1,4 +1,3 @@
-<!-- components/ProfileHeaderStatusBox.vue -->
 <script lang="ts" setup>
 const props = withDefaults(
     defineProps<{
@@ -11,7 +10,7 @@ const props = withDefaults(
         title: null,
         value: null,
         icon: null,
-        mode: 'common', // common, warning, success, danger, primary
+        mode: 'common',
     },
 );
 </script>
@@ -19,16 +18,16 @@ const props = withDefaults(
 <template>
     <div
         :class="[
-            props.mode === 'common' && 'bg-slate-50 !text-slate-700',
-            props.mode === 'warning' && 'bg-warning !text-slate-900',
-            props.mode === 'success' && 'bg-success !text-white',
-            props.mode === 'danger' && 'bg-danger !text-white',
-            props.mode === 'primary' && 'bg-primary !text-white',
-            'text-center p-3 text-sm font-light rounded-2xl w-full min-h-24 flex flex-col items-center place-content-center gap-2 ring-4 !ring-slate-200/10',
+            props.mode === 'common' && 'border-white/20 bg-white/10 text-white',
+            props.mode === 'warning' && 'border-amber-200/30 bg-amber-300/15 text-white',
+            props.mode === 'success' && 'border-emerald-200/25 bg-emerald-400/20 text-white',
+            props.mode === 'danger' && 'border-rose-200/25 bg-rose-400/20 text-white',
+            props.mode === 'primary' && 'border-sky-200/25 bg-sky-400/20 text-white',
+            'flex min-h-[96px] flex-col items-center justify-center gap-2 rounded-2xl border px-3 py-4 text-center shadow-lg shadow-slate-950/10 backdrop-blur-sm',
         ]"
     >
-        <div v-if="props.title" class="font-light text-xs uppercase tracking-wider opacity-80">{{ props.title }}</div>
-        <Icon v-if="props.icon" :name="props.icon" class="size-6 mx-auto" />
-        <div v-if="props.value" class="font-medium text-base capitalize">{{ props.value }}</div>
+        <div v-if="props.title" class="text-[10px] font-semibold uppercase tracking-[0.16em] text-white/65">{{ props.title }}</div>
+        <Icon v-if="props.icon" :name="props.icon" class="size-6 text-white/90" />
+        <div v-if="props.value" class="text-sm font-semibold capitalize sm:text-base">{{ props.value }}</div>
     </div>
 </template>

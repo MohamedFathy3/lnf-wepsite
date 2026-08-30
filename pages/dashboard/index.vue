@@ -75,35 +75,28 @@ const normalizedNetworkPersons = computed(() => {
 </script>
 
 <template>
-    <div v-if="userStore.user">
+    <div v-if="userStore.user" class="min-h-screen bg-slate-50">
         <ProfileHeader :member="userStore.user" />
         <ApplicationWarning />
-        <div class="px-3 lg:px-12">
-            <div class="container my-5 flex flex-col gap-5">
-                <div class="grid lg:grid-cols-12 gap-5">
-                    <!-- العمود الأيسر - معلومات الشركة -->
+
+        <div class="bg-slate-50/90 px-3 py-6 sm:px-6 lg:px-12 lg:py-8">
+            <div class="container flex max-w-7xl flex-col gap-6">
+                <div class="grid gap-6 lg:grid-cols-12 lg:items-start">
                     <div class="lg:col-span-8">
                         <ProfileInfoBlock :member="userStore.user" />
                     </div>
 
-                    <!-- العمود الأيمن - الإجراءات -->
-                    <div class="lg:col-span-4 flex flex-col gap-5">
-                        <!-- ✅ الأزرار في أعلى العمود الأيمن -->
-                        <div v-if="isProfile" class="flex flex-col gap-3">
+                    <div class="flex flex-col gap-5 lg:col-span-4">
+                        <div
+                            v-if="isProfile"
+                            class="grid grid-cols-1 gap-3 rounded-3xl border border-slate-200/80 bg-white p-3 shadow-[0_18px_45px_-30px_rgba(15,23,42,0.45)] sm:grid-cols-2"
+                        >
                             <ProfileUpdateButton class="w-full" />
                             <ProfilePersonsBlockAddButton class="w-full" />
                         </div>
 
-                        <!-- الفروع -->
                         <ProfileBranchesBlock :members="userStore.user.group?.companies" />
-                        
-                        <!-- Contact Persons -->
-                        <ProfilePersonsBlock 
-                            :persons="normalizedContactPersons" 
-                            :network-persons="normalizedNetworkPersons"
-                            :can-delete="isProfile" 
-                            :can-edit="isProfile" 
-                        />
+                        <ProfilePersonsBlock :can-delete="isProfile" :can-edit="isProfile" :network-persons="normalizedNetworkPersons" :persons="normalizedContactPersons" />
                     </div>
                 </div>
             </div>

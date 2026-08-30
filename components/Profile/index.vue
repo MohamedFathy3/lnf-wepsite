@@ -1,4 +1,4 @@
-<script setup>
+<script lang="ts" setup>
 const props = defineProps({
     profile: {
         type: Object,
@@ -13,24 +13,27 @@ const props = defineProps({
 </script>
 
 <template>
-    <div v-if="props.profile">
+    <div v-if="props.profile" class="min-h-screen bg-slate-50">
         <ProfileHeader :member="props.profile" />
         <ApplicationWarning />
-        <div class="px-3 lg:px-12">
-            <div class="container my-5 flex flex-col gap-5">
-                <div class="grid lg:grid-cols-12 gap-5">
+
+        <div class="bg-slate-50/90 px-3 py-6 sm:px-6 lg:px-12 lg:py-8">
+            <div class="container flex max-w-7xl flex-col gap-6">
+                <div class="grid gap-6 lg:grid-cols-12 lg:items-start">
                     <div class="lg:col-span-8">
                         <ProfileInfoBlock :member="props.profile" />
                     </div>
-                    <div class="lg:col-span-4 flex flex-col gap-5">
-                        <div v-if="props.isProfile" class="flex items-center gap-5">
+
+                    <div class="flex flex-col gap-5 lg:col-span-4">
+                        <div
+                            v-if="props.isProfile"
+                            class="grid grid-cols-1 gap-3 rounded-3xl border border-slate-200/80 bg-white p-3 shadow-[0_18px_45px_-30px_rgba(15,23,42,0.45)] sm:grid-cols-2"
+                        >
                             <ProfilePersonsBlockAddButton class="w-full" />
                             <ProfileUpdateButton class="w-full" />
                         </div>
-                        <div class="flex flex-col gap-5">
-                            <ProfileBranchesBlock :members="props.profile.group?.companies" />
-                            <ProfilePersonsBlock :can-delete="props.isProfile" :can-edit="props.isProfile" :persons="props.profile.contactPersons" />
-                        </div>
+                        <ProfileBranchesBlock :members="props.profile.group?.companies" />
+                        <ProfilePersonsBlock :can-delete="props.isProfile" :can-edit="props.isProfile" :persons="props.profile.contactPersons" />
                     </div>
                 </div>
             </div>

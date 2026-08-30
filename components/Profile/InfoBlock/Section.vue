@@ -7,11 +7,13 @@ const props = defineProps<{
 
 <template>
     <div>
-        <div class="flex items-center gap-3">
-            <Icon v-if="props.icon" :name="props.icon" class="size-6 opacity-65" />
+        <div class="flex items-center gap-3 text-sm font-semibold text-slate-800">
+            <span class="flex size-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                <Icon v-if="props.icon" :name="props.icon" class="size-5" />
+            </span>
             <div v-if="props.title">{{ props.title }}</div>
         </div>
-        <div class="mt-2 font-light ml-9">
+        <div class="mt-4 font-light">
             <slot />
         </div>
     </div>
