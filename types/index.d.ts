@@ -556,6 +556,7 @@ type UserParamsFilter = {
     name: string | null | undefined;
     city: string | null | undefined;
     countryId: number | null | undefined;
+    user_id?: number | null | undefined;
 };
 
 type UserServerParams = {
@@ -595,7 +596,8 @@ type User = {
     employeesNum: string;
     otherCertificates: string | null;
     otherServices: string | null;
-    typeCompany: string;
+    typeCompany?: string | null;
+    type_company?: string | null;
     countryId: number;
     countryName: string;
     country: Country;

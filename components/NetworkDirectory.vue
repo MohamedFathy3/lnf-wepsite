@@ -49,7 +49,7 @@ const serverParams = ref({
         name: null,
         city: null,
         countryId: null,
-        userId: null,
+        user_id: null,
     },
     networks: [1],
     orderBy: 'type_company',
@@ -84,7 +84,7 @@ const resetFilter = async () => {
             name: null,
             city: null,
             countryId: null,
-            userId: null,
+            user_id: null,
         },
         networks: [1],
         orderBy: 'type_company',
@@ -176,7 +176,7 @@ onMounted(async () => {
                     />
 
                     <FormSelectInput
-                        v-model="serverParams.filters.userId"
+                        v-model="serverParams.filters.user_id"
                         :disabled="isLoading"
                         :select-data="usersData?.data || []"
                         keyvalue="id"
@@ -255,7 +255,6 @@ onMounted(async () => {
                                     <tr class="uppercase">
                                         <th class="text-left">Name</th>
                                         <th class="text-left">Country</th>
-                                        <th class="text-left">Type</th>
                                         <th class="text-left">HQ/Branch</th>
                                         <th class="text-right">Action</th>
                                     </tr>
@@ -294,17 +293,12 @@ onMounted(async () => {
                                                 </div>
                                             </td>
                                             <td>
-                                                <span class="text-xs bg-slate-100 px-2 py-1 rounded-full">
-                                                    {{ row.type || 'N/A' }}
-                                                </span>
-                                            </td>
-                                            <td>
                                                 <div>
                                                     <ProfileMemberType :status="row.type_company as string" />
                                                 </div>
                                             </td>
                                             <td class="text-right">
-                                                <NuxtLink :href="row.wsaId === (userStore.user as User).wsaId ? '/dashboard' : '/member/' + row.wsaId" target="_blank">
+                                                <NuxtLink :href="'/member/' + row.id" target="_blank">
                                                     <button class="btn btn-secondary btn-sm gap-3 font-light px-4" type="button">
                                                         <Icon class="size-4" name="solar:eye-line-duotone" />
                                                         View
@@ -315,7 +309,7 @@ onMounted(async () => {
                                     </template>
                                     <template v-else>
                                         <tr>
-                                            <td colspan="6">
+                                            <td colspan="5">
                                                 <div class="py-8 font-lg text-center">No members found</div>
                                             </td>
                                         </tr>
@@ -354,15 +348,11 @@ onMounted(async () => {
                                     </div>
                                 </div>
                                 <div class="py-3 flex items-center justify-between gap-5">
-                                    <div class="opacity-75 text-sm font-light text-left">Type</div>
-                                    <span class="text-xs bg-slate-100 px-2 py-1 rounded-full">{{ row.type || 'N/A' }}</span>
-                                </div>
-                                <div class="py-3 flex items-center justify-between gap-5">
                                     <div class="opacity-75 text-sm font-light text-left">HQ/BRANCH</div>
                                     <ProfileMemberType :status="row.type_company as string" />
                                 </div>
                                 <div class="py-3">
-                                    <NuxtLink :href="row.wsaId === (userStore.user as User).wsaId ? '/dashboard' : '/member/' + row.wsaId" target="_blank">
+                                    <NuxtLink :href="'/member/' + row.id" target="_blank">
                                         <button class="btn btn-primary w-full gap-3" type="button">
                                             <Icon class="size-4" name="solar:eye-line-duotone" />
                                             View

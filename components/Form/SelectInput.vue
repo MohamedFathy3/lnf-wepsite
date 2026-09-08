@@ -160,21 +160,18 @@ watchEffect(() => {
                         <span v-if="$attrs.thirdlabelvalue" class="font-light ml-0.5 group-hover:text-slate-100 opacity-75">, {{ option[$attrs.thirdlabelvalue] }}</span>
                     </div>
                 </template>
-                <template #selected-option="{ name, key, imageUrl, title, label }">
+                <template #selected-option="option">
                     <div>
                         <div :class="[icon && 'pl-5', 'flex items-center whitespace-nowrap truncate text-sm']">
                             <NuxtImg
                                 v-if="$attrs.imgvalue"
-                                :alt="name"
+                                :alt="option[$attrs.labelvalue]"
                                 :class="[isRoundedImage ? 'rounded-lg w-5 h-5' : 'rounded-sm w-6 h-4', ' mr-2 object-contain bg-white shrink-0']"
-                                :src="imageUrl"
-                                :title="name"
+                                :src="option[$attrs.imgvalue]"
+                                :title="option[$attrs.labelvalue]"
                             />
                             <div v-if="prefix" class="truncate">{{ prefix }}</div>
-                            <div v-if="$attrs.labelvalue === 'name'" class="truncate">{{ name }}</div>
-                            <div v-if="$attrs.labelvalue === 'label'" class="truncate">{{ label }}</div>
-                            <div v-if="$attrs.labelvalue === 'title'" class="truncate">{{ title }}</div>
-                            <div v-if="$attrs.labelvalue === 'key'" class="truncate">{{ key }}</div>
+                            <div class="truncate">{{ option[$attrs.labelvalue] }}</div>
                         </div>
                     </div>
                 </template>

@@ -117,6 +117,10 @@ export const useUserStore = defineStore('user', () => {
     };
 
     const fetchAuthUser = async () => {
+        if (import.meta.server) {
+            return false;
+        }
+
         if (token.value) {
             try {
                 const { data: res, error } = await useApiFetch('/api/member/current', {
@@ -134,7 +138,6 @@ export const useUserStore = defineStore('user', () => {
                 
                 if (error.value) {
                     console.error('Error fetching user:', error.value);
-                    // لو الـ token مش شغال، نسجله خروج
                     if (error.value.status === 401) {
                         logout();
                     }

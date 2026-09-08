@@ -221,7 +221,7 @@ watch(
                             placeholder="City" 
                         />
                         
-                        <FormSelectField
+                        <FormSelectInput
                             id="edit-company-country"
                             v-model="member.country_id"
                             name="edit-company-country"
@@ -255,10 +255,21 @@ watch(
                         />
                         <FormTextInput 
                             v-model="member.phone" 
-                            class="lg:col-span-6" 
+                            class="lg:col-span-4" 
                             label="Phone" 
                             name="phone" 
                             placeholder="Phone" 
+                        />
+                        <FormSelectInput
+                            v-model="member.phone_key_id"
+                            class="lg:col-span-2"
+                            label="Code"
+                            placeholder="Code"
+                            :select-data="resources.countries"
+                            labelvalue="key"
+                            keyvalue="id"
+                            imgvalue="imageUrl"
+                            secondlabelvalue="name"
                         />
                         <FormTextInput 
                             v-model="member.website" 
@@ -268,53 +279,6 @@ watch(
                             placeholder="Website" 
                         />
                     </div>
-
-                    <div class="lg:col-span-12 grid lg:grid-cols-12 gap-5">
-                        <FormSelectField
-                            v-model="member.status"
-                            class="lg:col-span-4"
-                            label="Status"
-                            placeholder="Select status"
-                            :select-data="[
-                                { name: 'Pending', value: 'pending' },
-                                { name: 'Approved', value: 'approved' },
-                                { name: 'Suspended', value: 'suspended' },
-                                { name: 'Blacklisted', value: 'blacklisted' },
-                            ]"
-                            labelvalue="name"
-                            keyvalue="value"
-                        />
-                        <FormSelectField
-                            v-model="member.type"
-                            class="lg:col-span-4"
-                            label="Member Type"
-                            placeholder="Select member type"
-                            :select-data="[
-                                { name: 'Member', value: 'member' },
-                                { name: 'Founder', value: 'founder' },
-                                { name: 'Vendor', value: 'vendor' },
-                                { name: 'Partner', value: 'partner' },
-                            ]"
-                            labelvalue="name"
-                            keyvalue="value"
-                        />
-                        <FormSelectField
-                            v-model="member.type_company"
-                            class="lg:col-span-4"
-                            label="Company Type"
-                            placeholder="Select company type"
-                            :select-data="[
-                                { name: 'Headquarters', value: 'hq' },
-                                { name: 'Branch', value: 'branch' },
-                            ]"
-                            labelvalue="name"
-                            keyvalue="value"
-                        />
-                    </div>
-
-               
-
-                
                 </div>
             </template>
             <template #footer>

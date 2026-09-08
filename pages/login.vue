@@ -31,7 +31,7 @@ useSeoMeta({
 const userStore = useUserStore();
 
 async function login() {
-    formLoading.value = true;
+    formLoading.value = false;
     const result = await v$.value.$validate();
     if (!result) {
         formLoading.value = false;

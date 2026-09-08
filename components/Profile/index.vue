@@ -32,8 +32,13 @@ const props = defineProps({
                             <ProfilePersonsBlockAddButton class="w-full" />
                             <ProfileUpdateButton class="w-full" />
                         </div>
-                        <ProfileBranchesBlock :members="props.profile.group?.companies" />
-                        <ProfilePersonsBlock :can-delete="props.isProfile" :can-edit="props.isProfile" :persons="props.profile.contactPersons" />
+                        <ProfileBranchesBlock :members="props.profile.group?.companies ?? []" />
+                        <ProfilePersonsBlock
+                            :can-delete="props.isProfile"
+                            :can-edit="props.isProfile"
+                            :network-persons="props.profile.contactPersonNetwork"
+                            :persons="props.profile.contactPersons"
+                        />
                     </div>
                 </div>
             </div>
