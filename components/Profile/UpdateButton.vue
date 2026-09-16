@@ -212,16 +212,14 @@ watch(
                             name="address" 
                             placeholder="Address" 
                         />
-                        
-                        <FormTextInput 
-                            v-model="member.city" 
-                            class="lg:col-span-6" 
-                            label="City" 
-                            name="city" 
-                            placeholder="City" 
+                           <FormTextInput 
+                            v-model="member.website" 
+                            class="lg:col-span-12" 
+                            label="Website" 
+                            name="website" 
+                            placeholder="Website" 
                         />
-                        
-                        <FormSelectInput
+                          <FormSelectInput
                             id="edit-company-country"
                             v-model="member.country_id"
                             name="edit-company-country"
@@ -233,6 +231,15 @@ watch(
                             keyvalue="id"
                             imgvalue="imageUrl"
                         />
+                        <FormTextInput 
+                            v-model="member.city" 
+                            class="lg:col-span-6" 
+                            label="City" 
+                            name="city" 
+                            placeholder="City" 
+                        />
+                        
+                      
                     </div>
 
                     <div class="lg:col-span-12 grid lg:grid-cols-12 gap-5">
@@ -253,16 +260,9 @@ watch(
                             placeholder="Company Email" 
                             type="email" 
                         />
-                        <FormTextInput 
-                            v-model="member.phone" 
-                            class="lg:col-span-4" 
-                            label="Phone" 
-                            name="phone" 
-                            placeholder="Phone" 
-                        />
-                        <FormSelectInput
+                         <FormSelectInput
                             v-model="member.phone_key_id"
-                            class="lg:col-span-2"
+                            class="lg:col-span-4"
                             label="Code"
                             placeholder="Code"
                             :select-data="resources.countries"
@@ -272,12 +272,14 @@ watch(
                             secondlabelvalue="name"
                         />
                         <FormTextInput 
-                            v-model="member.website" 
-                            class="lg:col-span-6" 
-                            label="Website" 
-                            name="website" 
-                            placeholder="Website" 
+                            v-model="member.phone" 
+                            class="lg:col-span-4" 
+                            label="Phone" 
+                            name="phone" 
+                            placeholder="Phone" 
                         />
+                       
+                     
                     </div>
                 </div>
             </template>

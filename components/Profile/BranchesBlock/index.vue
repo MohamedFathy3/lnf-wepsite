@@ -9,22 +9,23 @@ const route = useRoute();
 const userStore = useUserStore();
 
 const filteredMembers = computed(() => {
+    // ✅ الحماية الكاملة
+    const members = props?.members;
+    if (!Array.isArray(members) || members.length === 0) return [];
+
     const currentUserId = userStore.user?.id || (userStore.user as User & { user_id?: number })?.user_id;
 
-    return props.members
+    return members
         .filter((member) => {
+            if (!member) return false;
             const isHeadquarters = member.type_company === 'hq' || member.typeCompany === 'hq';
             return isHeadquarters || member.user_id !== currentUserId;
         })
-        .sort((firstMember, secondMember) => {
-            const firstIsHeadquarters = firstMember.type_company === 'hq' || firstMember.typeCompany === 'hq';
-            const secondIsHeadquarters = secondMember.type_company === 'hq' || secondMember.typeCompany === 'hq';
-
-            if (firstIsHeadquarters === secondIsHeadquarters) {
-                return 0;
-            }
-
-            return firstIsHeadquarters ? -1 : 1;
+        .sort((a, b) => {
+            const aHq = a?.type_company === 'hq' || a?.typeCompany === 'hq';
+            const bHq = b?.type_company === 'hq' || b?.typeCompany === 'hq';
+            if (aHq === bHq) return 0;
+            return aHq ? -1 : 1;
         });
 });
 </script>

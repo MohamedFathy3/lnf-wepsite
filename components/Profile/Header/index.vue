@@ -13,27 +13,18 @@ const membershipTypes = ref([
     { name: 'WSA Team', value: 'wsa_team' },
 ]);
 
-// تحديد الـ mode حسب الـ type
 const getTypeMode = (type: string) => {
     switch (type) {
-        case 'founder':
-            return 'warning';
-        case 'member':
-            return 'primary';
-        case 'vendor':
-            return 'success';
-        case 'partner':
-            return 'common';
-        case 'wsa_team':
-            return 'primary';
-        case 'non_member':
-            return 'danger';
-        default:
-            return 'common';
+        case 'founder': return 'warning';
+        case 'member': return 'primary';
+        case 'vendor': return 'success';
+        case 'partner': return 'common';
+        case 'wsa_team': return 'primary';
+        case 'non_member': return 'danger';
+        default: return 'common';
     }
 };
 
-// جلب اسم الـ type
 const getTypeName = (type: string) => {
     return membershipTypes.value.find((t) => t.value === type)?.name || type;
 };
@@ -41,39 +32,39 @@ const getTypeName = (type: string) => {
 
 <template>
     <div v-if="props.member" class="section-bg">
-        <div class="container px-12 py-8 text-white flex lg:flex-row flex-col items-center justify-between gap-8">
-            <!-- تفاصيل العضو -->
-            <ProfileHeaderMemberDetails :member="props.member" />
-            
-            <!-- Status Boxes -->
-            <div class="grid grid-cols-3 items-center lg:flex-row flex-col gap-3">
-                <!-- FPP Status -->
-            <ProfileHeaderStatusBox 
-    :icon="props.member.fpp ? 'solar:shield-check-outline' : 'solar:shield-cross-line-duotone'"
-    :mode="props.member.fpp ? 'success' : 'danger'"
-    :title="props.member.fpp ? 'FPP Active' : 'FPP Inactive'"
-/>
-                
-                <!-- Member Type -->
-              <!-- <ProfileHeaderStatusBox 
-    :mode="getTypeMode(props.user?.name)"
-    :value="getTypeName(props.member.type)"
-    title="Member Type"
-/> -->
-   <ProfileHeaderStatusBox 
-                    v-if="props.member.user"
-                    :image="props.member.user.imageUrl"
-                    :value="props.member.user.name"
-                    mode="common"
-                    title="Network"
-                />
-                <!-- Status -->
-                <ProfileHeaderStatusBox 
-                    :mode="props.member.status === 'approved' ? 'success' : props.member.status === 'suspended' ? 'danger' : props.member.status === 'blacklisted' ? 'danger' : 'warning'"
-                    :value="props.member.status"
-                    title="Status"
-                />
-                
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 text-white">
+            <!-- ✅ كل حاجة في المنتصف -->
+            <div class="flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-8">
+
+                <!-- تفاصيل العضو -->
+                <ProfileHeaderMemberDetails :member="props.member" class="w-full lg:w-auto" />
+
+                <!-- Status Boxes -->
+                <div class="grid grid-cols-3 gap-2 sm:gap-3 w-full sm:w-auto sm:min-w-[420px]">
+                    <!-- FPP Status -->
+                    <ProfileHeaderStatusBox
+                        :icon="props.member.fpp ? 'solar:shield-check-outline' : 'solar:shield-cross-line-duotone'"
+                        :mode="props.member.fpp ? 'success' : 'danger'"
+                        :title="props.member.fpp ? 'FPP' : 'FPP'"
+                        :value="props.member.fpp ? 'Active' : 'Inactive'"
+                    />
+
+                    <!-- Status -->
+                    <ProfileHeaderStatusBox
+                        :mode="props.member.status === 'approved' ? 'success' : props.member.status === 'suspended' ? 'danger' : props.member.status === 'blacklisted' ? 'danger' : 'warning'"
+                        :value="props.member.status"
+                        title="Status"
+                    />
+
+                    <!-- Network -->
+                    <ProfileHeaderStatusBox
+                        v-if="props.member.user"
+                        :image="props.member.user.imageUrl"
+                        :value="props.member.user.name"
+                        mode="common"
+                        title="Network"
+                    />
+                </div>
             </div>
         </div>
     </div>
