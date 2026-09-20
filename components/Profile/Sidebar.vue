@@ -15,27 +15,6 @@ const contactPerson = computed(() => {
     return networkPerson || companyPerson || null;
 });
 
-const contactName = computed(() => {
-    const person = contactPerson.value as any;
-    return person?.name || `${person?.firstName || ''} ${person?.lastName || ''}`.trim() || 'Contact person';
-});
-
-const contactInitials = computed(() =>
-    contactName.value
-        .split(' ')
-        .filter(Boolean)
-        .slice(0, 2)
-        .map((name) => name[0])
-        .join('')
-        .toUpperCase(),
-);
-
-const contactEmail = computed(() => (contactPerson.value as any)?.email || props.profile.companyEmail || props.profile.email || 'Not provided');
-const contactPhone = computed(() => {
-    const person = contactPerson.value as any;
-    return person?.phone || person?.phoneNumber || props.profile.phone || 'Not provided';
-});
-const contactImage = computed(() => (contactPerson.value as any)?.imageUrl || null);
 const aboutText = computed(() => {
     const description = props.profile.profile?.replace(/<[^>]*>/g, '').trim();
     return (
@@ -48,47 +27,14 @@ const aboutText = computed(() => {
 <template>
     <aside class="flex flex-col gap-4 sm:gap-5">
         <section class="profile-side-card overflow-hidden">
-            <div class="profile-side-card__heading">
+            <div class="profile-side-card__heading px-4 pt-4 sm:px-5 sm:pt-5">
                 <span class="profile-side-card__icon bg-cyan-50 text-primary"><Icon class="size-6" name="solar:users-group-rounded-linear" /></span>
                 <div>
                     <h2>Contact Person</h2>
                     <p>Primary contact at this company</p>
                 </div>
             </div>
-            <div v-if="contactPerson" class="mx-4 mb-0 overflow-hidden rounded-2xl border border-slate-200 bg-white sm:mx-5">
-                <div class="flex items-center gap-3 p-4">
-                    <NuxtImg v-if="contactImage" :src="contactImage" :alt="contactName" class="size-12 rounded-full object-cover" />
-                    <div v-else class="flex size-12 shrink-0 items-center justify-center rounded-full bg-blue-50 text-sm font-bold text-primary">{{ contactInitials }}</div>
-                    <div class="min-w-0">
-                        <div class="text-[10px] font-semibold uppercase text-slate-500">
-                            {{ (contactPerson as any)?.title || 'MS' }} <span class="text-slate-800">{{ contactName }}</span>
-                        </div>
-                        <a
-                            :href="contactEmail !== 'Not provided' ? `mailto:${contactEmail}` : undefined"
-                            class="mt-2 flex min-w-0 items-center gap-2 truncate text-xs text-slate-600 hover:text-primary"
-                            ><Icon class="size-4 shrink-0 text-slate-500" name="solar:letter-outline" />{{ contactEmail }}</a
-                        >
-                        <a
-                            :href="contactPhone !== 'Not provided' ? `tel:${String(contactPhone).replace(/[^0-9+]/g, '')}` : undefined"
-                            class="mt-1 flex items-center gap-2 text-xs text-slate-600 hover:text-primary"
-                            ><Icon class="size-4 shrink-0 text-slate-500" name="solar:phone-outline" />{{ contactPhone }}</a
-                        >
-                    </div>
-                </div>
-                <div class="grid grid-cols-3 border-t border-slate-100 text-primary">
-                    <a
-                        :href="contactEmail !== 'Not provided' ? `mailto:${contactEmail}` : undefined"
-                        class="flex h-11 items-center justify-center border-r border-slate-100 hover:bg-slate-50"
-                        ><Icon class="size-5" name="solar:letter-outline"
-                    /></a>
-                    <a
-                        :href="contactPhone !== 'Not provided' ? `tel:${String(contactPhone).replace(/[^0-9+]/g, '')}` : undefined"
-                        class="flex h-11 items-center justify-center border-r border-slate-100 hover:bg-slate-50"
-                        ><Icon class="size-5" name="solar:phone-outline"
-                    /></a>
-                    <span class="flex h-11 items-center justify-center hover:bg-slate-50"><Icon class="size-5" name="mdi:linkedin" /></span>
-                </div>
-            </div>
+            <ProfilePersonsBlockCard v-if="contactPerson" class="mx-4 mb-0 sm:mx-5" compact :can-delete="false" :can-edit="props.isProfile" :person="contactPerson" />
             <div v-else class="px-5 pb-5 text-sm italic text-slate-400">No contact person provided.</div>
         </section>
 

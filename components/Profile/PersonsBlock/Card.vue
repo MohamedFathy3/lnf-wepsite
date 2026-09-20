@@ -6,6 +6,7 @@ const props = defineProps<{
     person: ContactPerson;
     canEdit: boolean;
     canDelete: boolean;
+    compact?: boolean;
 }>();
 
 const titles = ref([
@@ -171,7 +172,23 @@ const deleteContactPerson = async (id: number) => {
             'overflow-hidden rounded-2xl border border-slate-200 bg-slate-50/50 text-sm intro-x group transition duration-300 hover:border-primary/20 hover:shadow-md',
         ]"
     >
-        <div class="relative border-b border-slate-200 bg-white px-4 py-4">
+        <div v-if="props.compact" class="relative border-b border-slate-200 bg-white px-4 py-4">
+            <div class="flex items-center gap-3">
+                <NuxtImg v-if="props.person.imageUrl" :src="props.person.imageUrl" class="size-12 rounded-full object-cover ring-1 ring-slate-200" />
+                <div v-else class="flex size-12 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                    <span class="text-sm font-bold">{{ (props.person.name || 'CP').slice(0, 2).toUpperCase() }}</span>
+                </div>
+                <div class="min-w-0">
+                    <div class="text-[10px] font-semibold uppercase text-slate-500">
+                        {{ props.person.title || 'MS' }} <span class="text-slate-800">{{ props.person.name || props.person.firstName + ' ' + props.person.lastName }}</span>
+                    </div>
+                    <div v-if="props.person.jobTitle || props.person.job_title" class="mt-1 truncate text-xs text-slate-500">
+                        {{ props.person.jobTitle || props.person.job_title }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div v-else class="relative border-b border-slate-200 bg-white px-4 py-4">
             <div class="flex items-center gap-3">
                 <NuxtImg v-if="props.person.imageUrl" :src="props.person.imageUrl" class="size-12 rounded-2xl object-cover ring-1 ring-slate-200" />
                 <div v-else class="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary">
@@ -186,7 +203,14 @@ const deleteContactPerson = async (id: number) => {
                 </div>
             </div>
         </div>
-        <div class="divide-y divide-slate-200/80 px-4">
+        <div v-if="props.compact" class="divide-y divide-slate-200/80 px-4">
+            <div class="flex items-center gap-2 py-2.5 text-xs text-slate-600"><Icon class="size-4 text-slate-500" name="solar:letter-outline" />{{ props.person.email }}</div>
+            <div v-if="props.person.phone || props.person.phoneNumber" class="flex items-center gap-2 py-2.5 text-xs text-slate-600">
+                <Icon class="size-4 text-slate-500" name="solar:phone-outline" />{{ props.person.phoneKey ? `+${props.person.phoneKey} ` : ''
+                }}{{ props.person.phone || props.person.phoneNumber }}
+            </div>
+        </div>
+        <div v-else class="divide-y divide-slate-200/80 px-4">
             <div class="flex items-center justify-between gap-4 py-3">
                 <div class="text-xs font-medium uppercase tracking-wide text-slate-400">Email</div>
                 <div class="max-w-[65%] truncate text-right font-medium text-slate-700">{{ props.person.email }}</div>
@@ -206,7 +230,16 @@ const deleteContactPerson = async (id: number) => {
                 </div>
             </div>
         </div>
-        <div v-if="props.canEdit || props.canDelete" class="flex items-center">
+        <div v-if="props.compact && props.canEdit" class="flex items-center border-t border-slate-100">
+            <button
+                class="flex w-full cursor-pointer items-center justify-center gap-2 bg-white p-3 text-center text-sm font-medium text-primary transition-all hover:bg-slate-50"
+                @click="openModal"
+            >
+                <Icon class="size-4 shrink-0" name="solar:pen-new-round-outline" />
+                <span>Update</span>
+            </button>
+        </div>
+        <div v-if="!props.compact && (props.canEdit || props.canDelete)" class="flex items-center">
             <button
                 v-if="props.canEdit"
                 class="flex w-full cursor-pointer items-center place-content-center gap-2 bg-primary p-3 text-center text-sm font-medium text-white transition-all hover:bg-primary/85"
