@@ -15,13 +15,20 @@ const membershipTypes = ref([
 
 const getTypeMode = (type: string) => {
     switch (type) {
-        case 'founder': return 'warning';
-        case 'member': return 'primary';
-        case 'vendor': return 'success';
-        case 'partner': return 'common';
-        case 'wsa_team': return 'primary';
-        case 'non_member': return 'danger';
-        default: return 'common';
+        case 'founder':
+            return 'warning';
+        case 'member':
+            return 'primary';
+        case 'vendor':
+            return 'success';
+        case 'partner':
+            return 'common';
+        case 'wsa_team':
+            return 'primary';
+        case 'non_member':
+            return 'danger';
+        default:
+            return 'common';
     }
 };
 
@@ -34,7 +41,6 @@ const getTypeName = (type: string) => {
     <div v-if="props.member" class="profile-header section-bg">
         <div class="profile-header__inner container mx-auto px-8 text-white sm:px-6 lg:px-8">
             <div class="profile-header__content">
-
                 <!-- تفاصيل العضو -->
                 <ProfileHeaderMemberDetails :member="props.member" class="w-full lg:w-auto" />
 
@@ -42,23 +48,23 @@ const getTypeName = (type: string) => {
                 <div class="profile-header__status-wrap">
                     <div class="profile-header__tagline">Connecting Logistics Worldwide</div>
                     <div class="profile-header__status grid w-full grid-cols-2 gap-2 sm:w-auto sm:min-w-[360px] sm:gap-3">
-                    <!-- FPP Status -->
-                    <ProfileHeaderStatusBox
-                        :icon="props.member.fpp ? 'solar:shield-check-outline' : 'solar:shield-cross-line-duotone'"
-                        :mode="props.member.fpp ? 'success' : 'danger'"
-                        :title="props.member.fpp ? 'FPP' : 'FPP'"
-                        :value="props.member.fpp ? 'Active' : 'Inactive'"
-                    />
+                        <!-- FPP Status -->
+                        <ProfileHeaderStatusBox
+                            :icon="props.member.fpp ? 'solar:shield-check-outline' : 'solar:shield-cross-line-duotone'"
+                            :mode="props.member.fpp ? 'success' : 'danger'"
+                            :title="props.member.fpp ? 'FPP' : 'FPP'"
+                            :value="props.member.fpp ? 'Active' : 'Inactive'"
+                        />
 
-                    <!-- Network -->
-                    <ProfileHeaderStatusBox
-                        v-if="props.member.user"
-                        icon=""
-                        :image="props.member.user.imageUrl"
-                        :value="props.member.user.name"
-                        mode="common"
-                        title="Network"
-                    />
+                        <!-- Network -->
+                        <ProfileHeaderStatusBox
+                            v-if="props.member.user"
+                            icon=""
+                            :image="props.member.user.imageUrl"
+                            :value="props.member.currentNetworkStatus?.name || props.member.user.name"
+                            mode="common"
+                            title="Network"
+                        />
                     </div>
                 </div>
             </div>

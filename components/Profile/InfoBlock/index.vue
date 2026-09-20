@@ -20,20 +20,12 @@ const props = defineProps<{
             <ProfileInfoBlockSection class="py-6 first:pt-6" icon="solar:clipboard-list-outline" title="Company details">
                 <ProfileInfoBlockList>
                     <ProfileInfoBlockItem title="Company name">{{ props.member.name || 'Not provided' }}</ProfileInfoBlockItem>
-                    <ProfileInfoBlockItem title="Address">
-                        <div class="text-left md:text-right">
-                            <template v-if="props.member.addressLine1 || props.member.addressLine2">
-                                <span v-if="props.member.addressLine1">{{ props.member.addressLine1 }}</span>
-                                <span v-if="props.member.addressLine2">, {{ props.member.addressLine2 }}</span>
-                            </template>
-                            <span v-else class="italic text-slate-400">Not provided</span>
-                        </div>
-                    </ProfileInfoBlockItem>
                     <ProfileInfoBlockItem title="City">{{ props.member.city || 'Not provided' }}</ProfileInfoBlockItem>
                     <ProfileInfoBlockItem title="Country">
                         <ApplicationCountry v-if="props.member.country" :country="props.member.country" size="base" />
                         <span v-else class="italic text-slate-400">Not provided</span>
                     </ProfileInfoBlockItem>
+                    <ProfileInfoBlockItem title="Website">{{ props.member.website || 'Not provided' }}</ProfileInfoBlockItem>
                     <ProfileInfoBlockItem title="Established year">{{ props.member.businessEst || 'Not provided' }}</ProfileInfoBlockItem>
                     <ProfileInfoBlockItem title="Company type">{{ props.member.type_company || props.member.typeCompany || 'Not provided' }}</ProfileInfoBlockItem>
                     <ProfileInfoBlockItem title="IATA / FIATA">{{ props.member.iataFiata || 'Not provided' }}</ProfileInfoBlockItem>
@@ -49,10 +41,17 @@ const props = defineProps<{
                         </div>
                     </ProfileInfoBlockItem>
                     <ProfileInfoBlockItem title="Company email">{{ props.member.companyEmail ?? props.member.email ?? 'Not provided' }}</ProfileInfoBlockItem>
-                    <ProfileInfoBlockItem title="Website">{{ props.member.website || 'Not provided' }}</ProfileInfoBlockItem>
+                    <ProfileInfoBlockItem title="Address">
+                        <div class="text-left md:text-right">
+                            <template v-if="props.member.addressLineOne || props.member.addressLineTwo">
+                                <span v-if="props.member.addressLineOne">{{ props.member.addressLineOne }}</span>
+                                <span v-if="props.member.addressLineTwo">, {{ props.member.addressLineTwo }}</span>
+                            </template>
+                            <span v-else class="italic text-slate-400">Not provided</span>
+                        </div>
+                    </ProfileInfoBlockItem>
                 </ProfileInfoBlockList>
             </ProfileInfoBlockSection>
-
         </div>
     </div>
 </template>
