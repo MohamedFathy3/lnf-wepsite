@@ -11,7 +11,7 @@ const props = defineProps<{
                 <Icon class="size-6" name="solar:buildings-2-linear" />
             </div>
             <div>
-                <div class="text-base font-semibold text-slate-900 sm:text-lg">Company overview</div>
+                <div class="text-base font-semibold text-slate-900 sm:text-lg">Company Overview</div>
                 <div class="mt-0.5 text-xs text-slate-500">Key details and contact channels</div>
             </div>
         </div>
@@ -19,56 +19,40 @@ const props = defineProps<{
         <div class="divide-y divide-slate-100 px-5 sm:px-7">
             <ProfileInfoBlockSection class="py-6 first:pt-6" icon="solar:clipboard-list-outline" title="Company details">
                 <ProfileInfoBlockList>
-                    <ProfileInfoBlockItem v-if="props.member.addressLine1 || props.member.addressLine2" title="Address">
+                    <ProfileInfoBlockItem title="Company name">{{ props.member.name || 'Not provided' }}</ProfileInfoBlockItem>
+                    <ProfileInfoBlockItem title="Address">
                         <div class="text-left md:text-right">
-                            <span v-if="props.member.addressLine1">{{ props.member.addressLine1 }}</span>
-                            <span v-if="props.member.addressLine2">, {{ props.member.addressLine2 }}</span>
+                            <template v-if="props.member.addressLine1 || props.member.addressLine2">
+                                <span v-if="props.member.addressLine1">{{ props.member.addressLine1 }}</span>
+                                <span v-if="props.member.addressLine2">, {{ props.member.addressLine2 }}</span>
+                            </template>
+                            <span v-else class="italic text-slate-400">Not provided</span>
                         </div>
                     </ProfileInfoBlockItem>
-                    <ProfileInfoBlockItem v-if="props.member.postalCode" title="Postal code">{{ props.member.postalCode }}</ProfileInfoBlockItem>
-                    <ProfileInfoBlockItem v-if="props.member.city" title="City">{{ props.member.city }}</ProfileInfoBlockItem>
-                    <ProfileInfoBlockItem v-if="props.member.state" title="State">{{ props.member.state }}</ProfileInfoBlockItem>
-                    <ProfileInfoBlockItem v-if="props.member.country" title="Country">
-                        <ApplicationCountry :country="props.member.country" size="base" />
+                    <ProfileInfoBlockItem title="City">{{ props.member.city || 'Not provided' }}</ProfileInfoBlockItem>
+                    <ProfileInfoBlockItem title="Country">
+                        <ApplicationCountry v-if="props.member.country" :country="props.member.country" size="base" />
+                        <span v-else class="italic text-slate-400">Not provided</span>
                     </ProfileInfoBlockItem>
-                    <ProfileInfoBlockItem v-if="props.member.businessEst" title="Established year">{{ props.member.businessEst }}</ProfileInfoBlockItem>
-                    <ProfileInfoBlockItem v-if="props.member.profile" title="About">
-                        <p class="leading-6 text-slate-600">{{ props.member.profile }}</p>
-                    </ProfileInfoBlockItem>
+                    <ProfileInfoBlockItem title="Established year">{{ props.member.businessEst || 'Not provided' }}</ProfileInfoBlockItem>
+                    <ProfileInfoBlockItem title="Company type">{{ props.member.type_company || props.member.typeCompany || 'Not provided' }}</ProfileInfoBlockItem>
+                    <ProfileInfoBlockItem title="IATA / FIATA">{{ props.member.iataFiata || 'Not provided' }}</ProfileInfoBlockItem>
                 </ProfileInfoBlockList>
             </ProfileInfoBlockSection>
 
             <ProfileInfoBlockSection class="py-6" icon="solar:chat-square-call-linear" title="Contact information">
                 <ProfileInfoBlockList>
-                    <ProfileInfoBlockItem v-if="props.member.phone" title="Phone">
+                    <ProfileInfoBlockItem title="Phone">
                         <div class="flex flex-wrap items-center gap-1.5">
-                            <span v-if="props.member.phoneKey">+{{ props.member.phoneKey }}</span>
-                            <span>{{ props.member.phone }}</span>
+                            <span v-if="props.member.phone">{{ props.member.phoneKey ? `+${props.member.phoneKey} ` : '' }}{{ props.member.phone }}</span>
+                            <span v-else class="italic text-slate-400">Not provided</span>
                         </div>
                     </ProfileInfoBlockItem>
-                    <ProfileInfoBlockItem v-if="props.member.fax" title="Fax">
-                        <div class="flex flex-wrap items-center gap-1.5">
-                            <span v-if="props.member.faxKey">+{{ props.member.faxKey }}</span>
-                            <span>{{ props.member.fax }}</span>
-                        </div>
-                    </ProfileInfoBlockItem>
-                    <ProfileInfoBlockItem v-if="props.member.companyEmail || props.member.email" title="Company email">
-                        {{ props.member.companyEmail ?? props.member.email }}
-                    </ProfileInfoBlockItem>
+                    <ProfileInfoBlockItem title="Company email">{{ props.member.companyEmail ?? props.member.email ?? 'Not provided' }}</ProfileInfoBlockItem>
+                    <ProfileInfoBlockItem title="Website">{{ props.member.website || 'Not provided' }}</ProfileInfoBlockItem>
                 </ProfileInfoBlockList>
             </ProfileInfoBlockSection>
 
-            <ProfileInfoBlockSection v-if="props.member.website" class="py-6 last:pb-6" icon="solar:global-outline" title="Website">
-                <a
-                    :href="props.member.website"
-                    class="inline-flex max-w-full items-center gap-2 break-all text-primary transition hover:text-[#0e477c] hover:underline"
-                    rel="noreferrer"
-                    target="_blank"
-                >
-                    <span>{{ props.member.website }}</span>
-                    <Icon class="size-4 shrink-0" name="solar:arrow-up-right-linear" />
-                </a>
-            </ProfileInfoBlockSection>
         </div>
     </div>
 </template>

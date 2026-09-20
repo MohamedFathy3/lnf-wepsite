@@ -1,7 +1,7 @@
 <!-- components/ProfileHeader.vue -->
 <script lang="ts" setup>
 const props = defineProps<{
-    member: User;
+    member: any;
 }>();
 
 const membershipTypes = ref([
@@ -31,16 +31,15 @@ const getTypeName = (type: string) => {
 </script>
 
 <template>
-    <div v-if="props.member" class="section-bg">
-        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 text-white">
-            <!-- ✅ كل حاجة في المنتصف -->
-            <div class="flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-8">
+    <div v-if="props.member" class="profile-header section-bg">
+        <div class="profile-header__inner container mx-auto px-4 text-white sm:px-6 lg:px-8">
+            <div class="profile-header__content">
 
                 <!-- تفاصيل العضو -->
                 <ProfileHeaderMemberDetails :member="props.member" class="w-full lg:w-auto" />
 
                 <!-- Status Boxes -->
-                <div class="grid grid-cols-3 gap-2 sm:gap-3 w-full sm:w-auto sm:min-w-[420px]">
+                <div class="profile-header__status grid w-full grid-cols-2 gap-2 sm:w-auto sm:min-w-[360px] sm:gap-3">
                     <!-- FPP Status -->
                     <ProfileHeaderStatusBox
                         :icon="props.member.fpp ? 'solar:shield-check-outline' : 'solar:shield-cross-line-duotone'"
@@ -49,16 +48,10 @@ const getTypeName = (type: string) => {
                         :value="props.member.fpp ? 'Active' : 'Inactive'"
                     />
 
-                    <!-- Status -->
-                    <ProfileHeaderStatusBox
-                        :mode="props.member.status === 'approved' ? 'success' : props.member.status === 'suspended' ? 'danger' : props.member.status === 'blacklisted' ? 'danger' : 'warning'"
-                        :value="props.member.status"
-                        title="Status"
-                    />
-
                     <!-- Network -->
                     <ProfileHeaderStatusBox
                         v-if="props.member.user"
+                        icon=""
                         :image="props.member.user.imageUrl"
                         :value="props.member.user.name"
                         mode="common"
@@ -69,3 +62,74 @@ const getTypeName = (type: string) => {
         </div>
     </div>
 </template>
+
+<style scoped>
+.profile-header {
+    position: relative;
+    isolation: isolate;
+    min-height: 216px;
+    background-color: #1a64a4;
+    background-image: url('/bringing-freight-forwarding-networks-together-worldwide-2-02e214a9-c3e4-4290-bcd5-974d85d6ed75.jpg');
+    background-position: center;
+    background-size: cover;
+}
+
+.profile-header::before {
+    position: absolute;
+    z-index: 0;
+    inset: 0;
+    background: rgba(26, 100, 164, 0.3);
+    backdrop-filter: blur(2px);
+    content: '';
+}
+
+.profile-header__inner {
+    position: relative;
+    z-index: 1;
+    min-height: 216px;
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+}
+
+.profile-header__content {
+    display: grid;
+    min-height: 168px;
+    grid-template-columns: minmax(0, 1.55fr) minmax(360px, 0.8fr);
+    align-items: center;
+    gap: 1.5rem;
+}
+
+@media (max-width: 1100px) {
+    .profile-header__content {
+        grid-template-columns: minmax(0, 1fr) minmax(300px, 0.9fr);
+    }
+
+    .profile-header__status {
+        grid-column: 1 / -1;
+        justify-self: end;
+    }
+}
+
+@media (max-width: 680px) {
+    .profile-header,
+    .profile-header__inner {
+        min-height: 0;
+    }
+
+    .profile-header__inner {
+        padding-top: 1.25rem;
+        padding-bottom: 1.25rem;
+    }
+
+    .profile-header__content {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .profile-header__status {
+        grid-column: auto;
+        justify-self: stretch;
+        min-width: 0;
+    }
+}
+</style>

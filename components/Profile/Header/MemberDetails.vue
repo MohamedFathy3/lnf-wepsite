@@ -28,10 +28,10 @@ const contactPerson = computed(() => {
 </script>
 
 <template>
-    <div v-if="member" class="flex min-w-0 items-center gap-3 sm:gap-5">
+    <div v-if="member" class="profile-member-details flex min-w-0 items-center gap-3 sm:gap-5">
         <!-- Logo -->
         <div
-            class="relative flex h-20 w-24 shrink-0 items-center justify-center rounded-2xl border border-white/30 bg-white p-2.5 shadow-xl shadow-slate-950/10 sm:h-28 sm:w-52 sm:p-3"
+            class="profile-member-logo relative flex h-20 w-32 shrink-0 items-center justify-center rounded-xl border border-white/30 bg-white p-2.5 shadow-xl shadow-slate-950/10 sm:h-32 sm:w-56 sm:p-4"
         >
             <NuxtImg
                 :alt="member.name"
@@ -52,41 +52,36 @@ const contactPerson = computed(() => {
 
         <!-- معلومات الشركة -->
         <div class="min-w-0 space-y-1 sm:space-y-1.5">
-            <!-- النوع -->
-            <div class="text-[9px] font-semibold uppercase tracking-[0.18em] text-cyan-100/80 sm:text-[10px] sm:tracking-[0.22em]">
-                {{ member.type_company === 'hq' ? 'Headquarters' : 'Branch Office' }}
-            </div>
-
             <!-- الاسم -->
             <div class="flex flex-wrap items-center gap-1.5 sm:gap-2">
-                <div class="break-words text-sm font-semibold leading-tight sm:text-lg lg:text-xl">
+                <div class="break-words text-base font-semibold leading-tight sm:text-lg lg:text-xl">
                     {{ member.name }}
                 </div>
-                <ProfileMemberType :status="memberType" />
             </div>
 
             <!-- الموقع -->
-            <div class="flex flex-wrap items-center text-[11px] text-white/80 sm:text-xs">
+            <div class="flex flex-wrap items-center gap-1.5 text-xs text-white/90 sm:text-sm">
+                <ProfileMemberType :status="memberType" />
                 <ApplicationCountry :country="member.country" size="sm" />
                 <div v-if="member.city" class="font-light">, {{ member.city }}</div>
             </div>
 
             <!-- معلومات التواصل -->
-            <div class="flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-white/75 sm:text-xs">
+            <div class="flex flex-col gap-1 text-xs text-white/85 sm:text-sm">
                 <div v-if="contactPerson" class="flex items-center gap-1.5 min-w-0">
-                    <Icon class="size-3.5 shrink-0 text-cyan-100 sm:size-4" name="solar:user-outline" />
+                    <Icon class="size-4 shrink-0 text-white" name="solar:user-outline" />
                     <span class="font-medium text-white truncate">{{ contactPerson.name }}</span>
                 </div>
 
                 <div v-if="contactPerson?.email && contactPerson.email.includes('@')" class="flex items-center gap-1.5 min-w-0">
-                    <Icon class="size-3.5 shrink-0 text-cyan-100 sm:size-4" name="solar:letter-outline" />
+                    <Icon class="size-4 shrink-0 text-white" name="solar:letter-outline" />
                     <a :href="'mailto:' + contactPerson.email" class="font-medium text-white hover:underline truncate">
                         {{ contactPerson.email }}
                     </a>
                 </div>
 
                 <div v-if="contactPerson?.phone" class="flex items-center gap-1.5 min-w-0">
-                    <Icon class="size-3.5 shrink-0 text-cyan-100 sm:size-4" name="solar:phone-outline" />
+                    <Icon class="size-4 shrink-0 text-white" name="solar:phone-outline" />
                     <a :href="'tel:' + contactPerson.phone.replace(/[^0-9+]/g, '')" class="font-medium text-white hover:underline truncate">
                         {{ contactPerson.phone }}
                     </a>
@@ -102,3 +97,35 @@ const contactPerson = computed(() => {
         </div>
     </div>
 </template>
+
+<style scoped>
+.profile-member-details :deep(.profile-member-logo) {
+    min-height: 128px;
+}
+
+.profile-member-details :deep(.profile-member-logo > img) {
+    max-height: 100%;
+}
+
+.profile-member-details :deep(.rounded-full) {
+    display: inline-grid;
+    width: 28px;
+    height: 28px;
+    flex: 0 0 28px;
+    place-items: center;
+    padding: 0;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 800;
+}
+
+@media (max-width: 680px) {
+    .profile-member-details {
+        align-items: flex-start;
+    }
+
+    .profile-member-details :deep(.profile-member-logo) {
+        min-height: 96px;
+    }
+}
+</style>

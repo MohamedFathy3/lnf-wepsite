@@ -87,12 +87,20 @@ const normalizedNetworkPersons = computed(() => {
                     </div>
 
                     <div class="flex flex-col gap-5 lg:col-span-4">
-                        <div
-                            v-if="isProfile"
-                            class="grid grid-cols-1 gap-3 rounded-3xl border border-slate-200/80 bg-white p-3 shadow-[0_18px_45px_-30px_rgba(15,23,42,0.45)] sm:grid-cols-2"
-                        >
-                            <ProfileUpdateButton class="w-full" />
-                            <ProfilePersonsBlockAddButton class="w-full" />
+                        <div class="rounded-3xl border border-slate-200/80 bg-white p-4 shadow-[0_18px_45px_-30px_rgba(15,23,42,0.45)]">
+                            <div class="flex items-center gap-3">
+                                <span class="flex size-10 shrink-0 items-center justify-center rounded-2xl bg-amber-50 text-amber-600">
+                                    <Icon class="size-5" name="solar:bolt-linear" />
+                                </span>
+                                <div>
+                                    <div class="text-sm font-semibold text-slate-800">Quick Actions</div>
+                                    <div class="text-xs text-slate-400">Manage your company profile</div>
+                                </div>
+                            </div>
+                            <div class="mt-4 grid grid-cols-2 gap-2">
+                                <ProfileUpdateButton class="w-full" />
+                                <ProfilePersonsBlockAddButton class="w-full" />
+                            </div>
                         </div>
 
                         <ProfileBranchesBlock :members="userStore.user.group?.companies" />
