@@ -30,7 +30,7 @@ const isLongValue = computed(() => {
             props.mode === 'success' && 'border-emerald-200/25 bg-emerald-400/20 text-white',
             props.mode === 'danger' && 'border-rose-200/25 bg-rose-400/20 text-white',
             props.mode === 'primary' && 'border-sky-200/25 bg-sky-400/20 text-white',
-            'flex min-h-[112px] w-full flex-col items-center justify-center gap-1 rounded-xl border px-3 py-3 text-center shadow-md shadow-slate-950/10 backdrop-blur-sm transition-all duration-200 hover:scale-[1.02] sm:min-h-[116px] sm:px-4',
+            'profile-status-font flex min-h-[112px] w-full flex-col items-center justify-center gap-1 rounded-xl border px-3 py-3 text-center shadow-md shadow-slate-950/10 backdrop-blur-sm transition-all duration-200 hover:scale-[1.02] sm:min-h-[116px] sm:px-4',
         ]"
     >
         <!-- العنوان -->
@@ -64,3 +64,9 @@ const isLongValue = computed(() => {
         </div>
     </div>
 </template>
+
+<style scoped>
+.profile-status-font {
+    font-family: 'Dancing Script', cursive;
+}
+</style>

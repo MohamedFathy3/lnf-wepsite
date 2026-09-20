@@ -32,14 +32,16 @@ const getTypeName = (type: string) => {
 
 <template>
     <div v-if="props.member" class="profile-header section-bg">
-        <div class="profile-header__inner container mx-auto px-4 text-white sm:px-6 lg:px-8">
+        <div class="profile-header__inner container mx-auto px-8 text-white sm:px-6 lg:px-8">
             <div class="profile-header__content">
 
                 <!-- تفاصيل العضو -->
                 <ProfileHeaderMemberDetails :member="props.member" class="w-full lg:w-auto" />
 
                 <!-- Status Boxes -->
-                <div class="profile-header__status grid w-full grid-cols-2 gap-2 sm:w-auto sm:min-w-[360px] sm:gap-3">
+                <div class="profile-header__status-wrap">
+                    <div class="profile-header__tagline">Connecting Logistics Worldwide</div>
+                    <div class="profile-header__status grid w-full grid-cols-2 gap-2 sm:w-auto sm:min-w-[360px] sm:gap-3">
                     <!-- FPP Status -->
                     <ProfileHeaderStatusBox
                         :icon="props.member.fpp ? 'solar:shield-check-outline' : 'solar:shield-cross-line-duotone'"
@@ -57,6 +59,7 @@ const getTypeName = (type: string) => {
                         mode="common"
                         title="Network"
                     />
+                    </div>
                 </div>
             </div>
         </div>
@@ -67,7 +70,7 @@ const getTypeName = (type: string) => {
 .profile-header {
     position: relative;
     isolation: isolate;
-    min-height: 216px;
+    min-height: 270px;
     background-color: #1a64a4;
     background-image: url('/bringing-freight-forwarding-networks-together-worldwide-2-02e214a9-c3e4-4290-bcd5-974d85d6ed75.jpg');
     background-position: center;
@@ -86,17 +89,34 @@ const getTypeName = (type: string) => {
 .profile-header__inner {
     position: relative;
     z-index: 1;
-    min-height: 216px;
+    min-height: 270px;
     padding-top: 1.5rem;
     padding-bottom: 1.5rem;
 }
 
 .profile-header__content {
     display: grid;
-    min-height: 168px;
+    min-height: 222px;
     grid-template-columns: minmax(0, 1.55fr) minmax(360px, 0.8fr);
     align-items: center;
     gap: 1.5rem;
+}
+
+.profile-header__status-wrap {
+    width: 100%;
+    min-width: 360px;
+}
+
+.profile-header__tagline {
+    width: 100%;
+    margin-bottom: 0.5rem;
+    color: rgb(255 255 255 / 90%);
+    font-family: 'Dancing Script', cursive;
+    font-size: 1.8rem;
+    font-weight: 600;
+    line-height: 1.1;
+    text-align: center;
+    white-space: nowrap;
 }
 
 @media (max-width: 1100px) {
@@ -105,6 +125,11 @@ const getTypeName = (type: string) => {
     }
 
     .profile-header__status {
+        grid-column: 1 / -1;
+        justify-self: end;
+    }
+
+    .profile-header__status-wrap {
         grid-column: 1 / -1;
         justify-self: end;
     }
@@ -130,6 +155,15 @@ const getTypeName = (type: string) => {
         grid-column: auto;
         justify-self: stretch;
         min-width: 0;
+    }
+
+    .profile-header__status-wrap {
+        min-width: 0;
+    }
+
+    .profile-header__tagline {
+        margin-bottom: 0.65rem;
+        font-size: 1.5rem;
     }
 }
 </style>
