@@ -2,6 +2,19 @@
 import { required } from '@vuelidate/validators';
 import useVuelidate from '@vuelidate/core';
 
+const props = withDefaults(
+    defineProps<{
+        label?: string;
+        icon?: string;
+        soft?: boolean;
+    }>(),
+    {
+        label: 'Edit Company',
+        icon: 'solar:pen-new-round-linear',
+        soft: false,
+    },
+);
+
 const resources = useResourceStore();
 const userStore = useUserStore();
 
@@ -163,9 +176,16 @@ watch(
 
 <template>
     <div>
-        <button class="w-full btn btn-primary btn-sm !text-xs px-3 !font-light btn-rounded gap-2 whitespace-nowrap" type="button" @click="openMemberModal">
-            <Icon class="size-4" name="solar:pen-new-round-linear" />
-            <span>Edit Company</span>
+        <button
+            :class="[
+                'btn btn-sm min-h-12 w-full !rounded-xl !px-4 !text-sm !font-medium btn-rounded gap-2 whitespace-nowrap',
+                props.soft ? 'bg-cyan-50/80 text-primary hover:bg-cyan-100' : 'btn-primary text-white',
+            ]"
+            type="button"
+            @click="openMemberModal"
+        >
+            <Icon class="size-4" :name="props.icon" />
+            <span>{{ props.label }}</span>
         </button>
 
         <TheModal :open-modal="memberModalOpen" size="4xl" @close-modal="closeMemberModal()">

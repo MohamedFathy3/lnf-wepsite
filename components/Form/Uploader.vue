@@ -70,7 +70,7 @@ function resetErrors() {
     validationError.value = false;
 }
 
-const validateFile = ($event: DragEvent | InputEvent) => {
+const validateFile = ($event: Event) => {
     const fileInput = $event instanceof DragEvent ? $event.dataTransfer?.files?.[0] : $event.target instanceof HTMLInputElement ? $event.target.files?.[0] : undefined;
     resetErrors();
 
@@ -134,7 +134,12 @@ async function onDropFile($event: DragEvent) {
     resetErrors();
     uploading.value = true;
     const fileInput = $event.dataTransfer?.items[0]?.getAsFile();
-    if (fileInput) {
+    if (!fileInput) {
+        uploading.value = false;
+        return;
+    }
+
+    try {
         const formData = new FormData();
         formData.append('file', fileInput);
         const { data: res } = await useApiFetch('/api/media', {
@@ -148,13 +153,14 @@ async function onDropFile($event: DragEvent) {
             file.value = res.value as MediaFile;
             value.value = (res.value as MediaFile).id;
             emit('update:model-value', value.value);
-            uploading.value = false;
-            dragging.value = false;
         }
+    } finally {
+        uploading.value = false;
+        dragging.value = false;
     }
 }
 
-async function onUploadFile($event: DragEvent | InputEvent): Promise<void> {
+async function onUploadFile($event: Event): Promise<void> {
     if (!validateFile($event)) {
         validationError.value = true;
         return;
@@ -168,21 +174,24 @@ async function onUploadFile($event: DragEvent | InputEvent): Promise<void> {
     if (fileInput && fileInput.files && fileInput.files[0]) {
         formData.append('file', fileInput.files[0]);
     } else {
-        // Handle case where there are no files
+        uploading.value = false;
         return;
     }
 
-    const { data: res } = await useApiFetch('/api/media', {
-        method: 'POST',
-        body: formData,
-        lazy: true,
-        transform: (res) => (res as MediaApiResponse).data as MediaFile,
-    });
+    try {
+        const { data: res } = await useApiFetch('/api/media', {
+            method: 'POST',
+            body: formData,
+            lazy: true,
+            transform: (res) => (res as MediaApiResponse).data as MediaFile,
+        });
 
-    if (res.value) {
-        file.value = res.value as MediaFile;
-        value.value = (res.value as MediaFile).id;
-        emit('update:model-value', value.value);
+        if (res.value) {
+            file.value = res.value as MediaFile;
+            value.value = (res.value as MediaFile).id;
+            emit('update:model-value', value.value);
+        }
+    } finally {
         uploading.value = false;
     }
 }
@@ -193,11 +202,14 @@ watchEffect(() => {
 
 async function getFile(id: number) {
     uploading.value = true;
-    const { data: res } = await useApiFetch(`/api/media/${id}`, {
-        transform: (res) => (res as MediaApiResponse).data as MediaFile,
-    });
-    if (res.value) {
-        file.value = res.value as MediaFile;
+    try {
+        const { data: res } = await useApiFetch(`/api/media/${id}`, {
+            transform: (res) => (res as MediaApiResponse).data as MediaFile,
+        });
+        if (res.value) {
+            file.value = res.value as MediaFile;
+        }
+    } finally {
         uploading.value = false;
     }
 }
@@ -222,13 +234,8 @@ function removeFile() {
 }
 
 onMounted(async () => {
-    if (props.modelValue) {
-        if (props.modelValue?.id) {
-            await getFile(props.modelValue?.id);
-        }
-        if (props.modelValue) {
-            await getFile(props.modelValue);
-        }
+    if (props.modelValue?.id) {
+        await getFile(props.modelValue.id);
     }
 
     props.allowedTypes.forEach((type) => {
@@ -256,7 +263,7 @@ onMounted(async () => {
                     <span>Remove</span>
                 </button>
             </div>
-            <NuxtImg :src="file.fullUrl" alt="company-logo" class="z-5 w-full h-36 group-hover:blur-md object-contain ease-in-out duration-300" />
+            <NuxtImg :src="file.fullUrl" alt="company-logo" class="z-5 w-full h-36 group-hover:blur-md object-contain ease-in-out duration-300" />  
         </div>
         <div v-else-if="uploading" class="bg-white flex justify-center ease-in-out duration-300 px-6 pt-5 pb-6 rounded-xl min-h-36">
             <Icon class="h-14 w-14" name="eos-icons:three-dots-loading" />
@@ -293,7 +300,7 @@ onMounted(async () => {
                 </div>
             </div>
         </div>
-        <template v-if="props.errors.length > 0 || validateFile">
+        <template v-if="props.errors.length > 0 || validationError || maxSizeMessage || maxFileTypeMessage">
             <ul class="mt-3 text-xs text-danger divide-y divide-dashed !divide-danger/25 font-light">
                 <li v-if="maxSizeMessage" class="py-2">{{ 'Maximum size is ' + props.maxSize + ' MB' }}</li>
                 <li v-if="maxFileTypeMessage" class="py-2">

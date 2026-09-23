@@ -6,21 +6,12 @@ const props = defineProps<{
 }>();
 
 const route = useRoute();
-const userStore = useUserStore();
-
 const filteredMembers = computed(() => {
-    // ✅ الحماية الكاملة
     const members = props?.members;
     if (!Array.isArray(members) || members.length === 0) return [];
 
-    const currentUserId = userStore.user?.id || (userStore.user as User & { user_id?: number })?.user_id;
-
     return members
-        .filter((member) => {
-            if (!member) return false;
-            const isHeadquarters = member.type_company === 'hq' || member.typeCompany === 'hq';
-            return isHeadquarters || member.user_id !== currentUserId;
-        })
+        .filter((member) => Boolean(member))
         .sort((a, b) => {
             const aHq = a?.type_company === 'hq' || a?.typeCompany === 'hq';
             const bHq = b?.type_company === 'hq' || b?.typeCompany === 'hq';

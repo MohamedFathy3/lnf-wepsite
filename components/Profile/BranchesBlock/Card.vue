@@ -5,8 +5,6 @@ const props = defineProps<{
     member: any;
 }>();
 
-const userStore = useUserStore();
-
 // نوع الشركة
 const memberType = computed(() => {
     return (props.member?.type_company || props.member?.typeCompany || 'branch') as string;
@@ -21,13 +19,6 @@ const contactPerson = computed(() => {
 });
 
 // نتأكد أن المستخدم الحالي مش هو صاحب الشركة
-const isNotCurrentUser = computed(() => {
-    if (!props.member) return false;
-    const currentUserId = userStore.user?.id || (userStore.user as User & { user_id?: number })?.user_id;
-    const isHeadquarters = props.member.type_company === 'hq' || props.member.typeCompany === 'hq';
-    return isHeadquarters || props.member.user_id !== currentUserId;
-});
-
 // الرابط
 const memberLink = computed(() => {
     return `/member/${props.member?.id}`;
@@ -35,7 +26,7 @@ const memberLink = computed(() => {
 </script>
 
 <template>
-    <NuxtLink v-if="isNotCurrentUser" :href="memberLink" class="intro-x block w-full">
+    <NuxtLink v-if="props.member" :href="memberLink" class="intro-x block w-full">
         <div class="hover:scale-[1.02] p-3 bg-white rounded-2xl border text-sm transition-all duration-300 hover:shadow-md hover:border-primary/30">
             <div class="relative">
                 <div>

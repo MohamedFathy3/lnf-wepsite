@@ -9,6 +9,11 @@ const props = withDefaults(
     { isProfile: false },
 );
 
+const groupCompanies = computed(() => {
+    const profile = props.profile as User & { group?: { companies?: any[] }; companies?: any[] };
+    return profile.group?.companies || profile.companies || [];
+});
+
 const contactPerson = computed(() => {
     const networkPerson = props.profile?.contactPersonNetwork?.[0];
     const companyPerson = props.profile?.contactPersons?.[0];
@@ -26,37 +31,38 @@ const aboutText = computed(() => {
 
 <template>
     <aside class="flex flex-col gap-4 sm:gap-5">
+        <ProfileBranchesBlock v-if="groupCompanies.length" :members="groupCompanies" />
+
         <section class="profile-side-card overflow-hidden">
-            <div class="profile-side-card__heading px-4 pt-4 sm:px-5 sm:pt-5">
-                <span class="profile-side-card__icon bg-cyan-50 text-primary"><Icon class="size-6" name="solar:users-group-rounded-linear" /></span>
+            <div class="profile-side-card__heading px-3 pt-4 sm:px-5 sm:pt-5">
+                <span class="profile-side-card__icon bg-cyan-50 text-primary"><Icon class="size-6" name="solar:users-group-rounded-bold" /></span>
                 <div>
                     <h2>Contact Person</h2>
                     <p>Primary contact at this company</p>
                 </div>
             </div>
-            <ProfilePersonsBlockCard v-if="contactPerson" class="mx-4 mb-0 sm:mx-5" compact :can-delete="false" :can-edit="props.isProfile" :person="contactPerson" />
+            <ProfilePersonsBlockCard v-if="contactPerson" class="mx-2 mb-0 sm:mx-3" compact :can-delete="false" :can-edit="props.isProfile" :person="contactPerson" />
             <div v-else class="px-5 pb-5 text-sm italic text-slate-400">No contact person provided.</div>
         </section>
 
         <section v-if="props.isProfile" class="profile-side-card p-4 sm:p-5">
             <div class="profile-side-card__heading">
-                <span class="profile-side-card__icon bg-amber-50 text-amber-600"><Icon class="size-6" name="solar:bolt-linear" /></span>
+                <span class="profile-side-card__icon bg-blue-50 text-primary"><Icon class="size-6" name="solar:bolt-linear" /></span>
                 <div>
                     <h2>Quick Actions</h2>
                     <p>Manage your company profile</p>
                 </div>
             </div>
             <div class="mt-4 grid grid-cols-2 gap-2">
-                <ProfileUpdateButton class="w-full !rounded-xl !bg-cyan-50 !text-primary hover:!bg-cyan-100" />
+                <ProfileUpdateButton class="w-full" soft />
                 <ProfilePersonsBlockAddButton class="w-full !rounded-xl !bg-emerald-50 !text-emerald-700 hover:!bg-emerald-100" />
-                <button class="flex min-h-12 items-center justify-center gap-1 rounded-xl bg-amber-50 px-2 text-xs font-medium text-amber-700 hover:bg-amber-100">
-                    <Icon class="size-4" name="solar:document-add-outline" /> Upload Documents
-                </button>
+                
                 <NuxtLink
                     to="/network-directory"
-                    class="flex min-h-12 items-center justify-center gap-1 rounded-xl bg-violet-50 px-2 text-xs font-medium text-violet-700 hover:bg-violet-100"
-                    ><Icon class="size-4" name="solar:square-share-line-outline" /> View in Directory</NuxtLink
+                    class="col-span-2 flex min-h-12 items-center justify-center gap-1 rounded-xl bg-violet-50 px-2 text-xs font-medium text-violet-700 hover:bg-violet-100"
                 >
+                    <Icon class="size-4" name="solar:square-share-line-outline" /> View in Directory
+                </NuxtLink>
             </div>
         </section>
 

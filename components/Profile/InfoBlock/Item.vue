@@ -10,9 +10,9 @@ const props = withDefaults(
 </script>
 
 <template>
-    <li class="flex flex-col items-start gap-1.5 py-3.5 text-sm sm:flex-row sm:justify-between sm:gap-6">
-        <div v-if="props.title" class="shrink-0 text-xs font-medium uppercase tracking-[0.12em] text-slate-400">{{ props.title }}</div>
-        <div class="min-w-0 max-w-full break-words text-left font-medium text-slate-700 sm:text-right">
+    <li class="grid grid-cols-[minmax(0,0.42fr)_minmax(0,0.58fr)] items-center gap-2 py-2 text-sm leading-5">
+        <div v-if="props.title" class="min-w-0 text-sm font-medium text-slate-500">{{ props.title }}</div>
+        <div class="min-w-0 break-words text-left font-medium text-slate-700">
             <slot />
         </div>
     </li>

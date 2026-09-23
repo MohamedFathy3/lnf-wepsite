@@ -16,6 +16,14 @@ const titles = ref([
 ]);
 const formLoading = ref(false);
 const isOpen = ref(false);
+const hasUsableImage = computed(() => {
+    const image = String(props.person.imageUrl || '').toLowerCase();
+    return Boolean(image) && !image.includes('default-logo.png');
+});
+const personInitials = computed(() => {
+    const name = (props.person.name || `${props.person.firstName || ''} ${props.person.lastName || ''}`).trim();
+    return name ? name.slice(0, 2).toUpperCase() : 'CP';
+});
 const item = ref({
     id: null,
     title: null,
@@ -172,11 +180,11 @@ const deleteContactPerson = async (id: number) => {
             'overflow-hidden rounded-2xl border border-slate-200 bg-slate-50/50 text-sm intro-x group transition duration-300 hover:border-primary/20 hover:shadow-md',
         ]"
     >
-        <div v-if="props.compact" class="relative border-b border-slate-200 bg-white px-4 py-4">
+        <div v-if="props.compact" class="relative   px-4 py-4">
             <div class="flex items-center gap-3">
-                <NuxtImg v-if="props.person.imageUrl" :src="props.person.imageUrl" class="size-12 rounded-full object-cover ring-1 ring-slate-200" />
+                <NuxtImg v-if="hasUsableImage" :src="props.person.imageUrl || undefined" class="size-12 rounded-full object-cover" />
                 <div v-else class="flex size-12 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-                    <span class="text-sm font-bold">{{ (props.person.name || 'CP').slice(0, 2).toUpperCase() }}</span>
+                    <span class="text-sm font-bold">{{ personInitials }}</span>
                 </div>
                 <div class="min-w-0">
                     <div class="text-[10px] font-semibold uppercase text-slate-500">
@@ -188,11 +196,11 @@ const deleteContactPerson = async (id: number) => {
                 </div>
             </div>
         </div>
-        <div v-else class="relative border-b border-slate-200 bg-white px-4 py-4">
+        <div v-else class="relative   px-4 py-4">
             <div class="flex items-center gap-3">
-                <NuxtImg v-if="props.person.imageUrl" :src="props.person.imageUrl" class="size-12 rounded-2xl object-cover ring-1 ring-slate-200" />
+                <NuxtImg v-if="hasUsableImage" :src="props.person.imageUrl || undefined" class="size-12 rounded-2xl object-cover" />
                 <div v-else class="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-                    <Icon class="size-6" name="solar:user-linear" />
+                    <span class="text-sm font-bold">{{ personInitials }}</span>
                 </div>
                 <div class="min-w-0">
                     <div class="flex min-w-0 items-center gap-1.5">
@@ -203,12 +211,42 @@ const deleteContactPerson = async (id: number) => {
                 </div>
             </div>
         </div>
-        <div v-if="props.compact" class="divide-y divide-slate-200/80 px-4">
-            <div class="flex items-center gap-2 py-2.5 text-xs text-slate-600"><Icon class="size-4 text-slate-500" name="solar:letter-outline" />{{ props.person.email }}</div>
-            <div v-if="props.person.phone || props.person.phoneNumber" class="flex items-center gap-2 py-2.5 text-xs text-slate-600">
-                <Icon class="size-4 text-slate-500" name="solar:phone-outline" />{{ props.person.phoneKey ? `+${props.person.phoneKey} ` : ''
-                }}{{ props.person.phone || props.person.phoneNumber }}
+        <div v-if="props.compact" class="divide-y divide-slate-200/80 bg-white px-4">
+            <div class="flex items-center gap-2 py-2.5 text-xs text-slate-600">
+                <Icon class="size-4 shrink-0 text-slate-500" name="solar:letter-outline" />
+                <span class="truncate">{{ props.person.email }}</span>
             </div>
+            <div v-if="props.person.phone || props.person.phoneNumber" class="flex items-center gap-2 py-2.5 text-xs text-slate-600">
+                <Icon class="size-4 shrink-0 text-slate-500" name="solar:phone-outline" />
+                <span>{{ props.person.phoneKey ? `+${props.person.phoneKey} ` : '' }}{{ props.person.phone || props.person.phoneNumber }}</span>
+            </div>
+        </div>
+        <div v-if="props.compact" class="flex items-center justify-around border-t border-slate-200 bg-white">
+            <a
+                v-if="props.person.email"
+                :href="`mailto:${props.person.email}`"
+                aria-label="Email contact person"
+                class="flex flex-1 items-center justify-center py-3 text-primary transition-colors hover:bg-slate-50"
+            >
+                <Icon class="size-6" name="solar:letter-outline" />
+            </a>
+            <a
+                v-if="props.person.phone || props.person.phoneNumber"
+                :href="`tel:${props.person.phone || props.person.phoneNumber}`"
+                aria-label="Call contact person"
+                class="flex flex-1 items-center justify-center border-x border-slate-200 py-3 text-primary transition-colors hover:bg-slate-50"
+            >
+                <Icon class="size-6" name="solar:phone-outline" />
+            </a>
+            <button
+                v-if="props.canEdit"
+                aria-label="Update contact person"
+                class="flex flex-1 cursor-pointer items-center justify-center py-3 text-primary transition-colors hover:bg-slate-50"
+                type="button"
+                @click="openModal"
+            >
+                <Icon class="size-6" name="solar:pen-new-round-outline" />
+            </button>
         </div>
         <div v-else class="divide-y divide-slate-200/80 px-4">
             <div class="flex items-center justify-between gap-4 py-3">
@@ -229,15 +267,6 @@ const deleteContactPerson = async (id: number) => {
                     <span>{{ props.person.cell || props.person.cellNumber }}</span>
                 </div>
             </div>
-        </div>
-        <div v-if="props.compact && props.canEdit" class="flex items-center border-t border-slate-100">
-            <button
-                class="flex w-full cursor-pointer items-center justify-center gap-2 bg-white p-3 text-center text-sm font-medium text-primary transition-all hover:bg-slate-50"
-                @click="openModal"
-            >
-                <Icon class="size-4 shrink-0" name="solar:pen-new-round-outline" />
-                <span>Update</span>
-            </button>
         </div>
         <div v-if="!props.compact && (props.canEdit || props.canDelete)" class="flex items-center">
             <button

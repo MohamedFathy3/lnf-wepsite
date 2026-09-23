@@ -25,7 +25,7 @@ const userStore = useUserStore();
 
 // ✅ جلب الـ Users للـ Select - بإضافة الـ token
 const userSearchParams = ref({
-    filters: {},
+    filters: {status:"approved",},
     orderBy: 'id',
     orderByDirection: 'desc',
     perPage: 1000,

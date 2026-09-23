@@ -46,7 +46,6 @@ const getTypeName = (type: string) => {
 
                 <!-- Status Boxes -->
                 <div class="profile-header__status-wrap">
-                    <div class="profile-header__tagline">Connecting Logistics Worldwide</div>
                     <div class="profile-header__status grid w-full grid-cols-2 gap-2 sm:w-auto sm:min-w-[360px] sm:gap-3">
                         <!-- FPP Status -->
                         <ProfileHeaderStatusBox
@@ -77,7 +76,7 @@ const getTypeName = (type: string) => {
     position: relative;
     isolation: isolate;
     min-height: 270px;
-    background-color: #1a64a4;
+    background-color: #51a2e8;
     background-image: url('/bringing-freight-forwarding-networks-together-worldwide-2-02e214a9-c3e4-4290-bcd5-974d85d6ed75.jpg');
     background-position: center;
     background-size: cover;
