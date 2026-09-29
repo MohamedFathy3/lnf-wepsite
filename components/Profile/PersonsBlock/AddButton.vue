@@ -127,7 +127,7 @@ const addContactPerson = async () => {
 <template>
     <div>
         <button
-            class="btn btn-sm min-h-12 w-full !rounded-xl bg-emerald-50/80 !px-4 !text-sm !font-medium text-emerald-700 btn-rounded gap-2 whitespace-nowrap hover:bg-emerald-100"
+            class="w-full btn btn-dark   btn-sm !text-xs px-3 !font-light btn-rounded gap-2 whitespace-nowrap"
             type="button"
             @click="openContactPersonModal"
         >

@@ -228,19 +228,10 @@ onMounted(async () => {
                         class="lg:col-span-2 btn btn-primary gap-2 font-light" 
                         type="submit"
                     >
-                        <Icon class="size-5" name="solar:rounded-magnifer-linear" />
-                        <span>Submit</span>
+                        <Icon class="size-5" name="solar:magnifer-linear" />
+                        <span>Search</span>
                     </button>
 
-                    <button 
-                        :disabled="isLoading" 
-                        class="lg:col-span-2 btn btn-secondary gap-2 font-light" 
-                        type="button" 
-                        @click="resetFilter"
-                    >
-                        <Icon class="size-5" name="solar:refresh-line-duotone" />
-                        <span>Reset</span>
-                    </button>
                 </form>
             </div>
 

@@ -29,16 +29,20 @@ const logout = () => {
                     <!-- ✅ حالة تسجيل الدخول - Dropdown -->
                     <template v-if="userStore.token && company">
                         <HeadlessMenu as="div" class="relative">
-                            <HeadlessMenuButton class="flex items-center gap-3 px-3 py-1.5 rounded-full hover:bg-slate-100 transition-all group">
-                                <NuxtImg 
-                                    :src="company.imageUrl || '/default-avatar.png'" 
-                                    :alt="company.name" 
+                            <HeadlessMenuButton class="group flex items-center gap-3 rounded-full px-3 py-1.5 text-left transition-all hover:bg-slate-100">
+                                <NuxtImg
+                                    :src="company.imageUrl &&   company.imageUrl"
+                                    :alt="company.name"
                                     :title="company.name"
-                                    class="h-9 w-9 rounded-full object-cover ring-2 ring-primary/20"
+                                    class="h-11 w-[72px] shrink-0 rounded-md bg-white p-1 object-contain ring-1 ring-slate-200"
                                 />
-                                <div class="text-left">
-                                    <div class="text-sm font-medium text-primary line-clamp-1 max-w-[120px]">{{ company.name }}</div>
-                                    <div class="text-[10px] opacity-50 truncate max-w-[120px]">{{ company.email }}</div>
+                                <div class="min-w-0 max-w-[180px]">
+                                    <div class="truncate text-sm font-bold text-black">{{ company.name }}</div>
+                                    <div class="flex min-w-0 items-center gap-1 truncate text-xs text-slate-500">
+                                        <span v-if="company.country?.name">{{ company.country.name }}</span>
+                                        <span v-if="company.country?.name && company.city">,</span>
+                                        <span v-if="company.city">{{ company.city }}</span>
+                                    </div>
                                 </div>
                                 <Icon name="solar:alt-arrow-down-linear" class="size-4 opacity-50 group-hover:rotate-180 transition-all" />
                             </HeadlessMenuButton>
@@ -46,26 +50,10 @@ const logout = () => {
                             <TransitionExpand>
                                 <HeadlessMenuItems class="absolute right-0 mt-2 w-56 origin-top-right rounded-xl bg-white shadow-lg ring-1 ring-black/5 focus:outline-none text-slate-600 z-50 border">
                                     <ul class="p-1">
-                                        <!-- معلومات المستخدم -->
-                                        <li class="px-3 py-2 border-b border-dashed">
-                                            <div class="flex items-center gap-3">
-                                                <NuxtImg 
-                                                    :src="company.imageUrl || '/default-avatar.png'" 
-                                                    :alt="company.name"
-                                                    class="h-10 w-10 rounded-full object-cover ring-2 ring-primary/20"
-                                                />
-                                                <div>
-                                                    <div class="text-sm font-medium">{{ company.name }}</div>
-                                                    <div class="text-xs opacity-50">{{ company.email }}</div>
-                                                </div>
-                                            </div>
-                                        </li>
-                                        
-                                        <!-- Dashboard -->
                                         <HeadlessMenuItem as="li">
                                             <NuxtLink href="/dashboard" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-primary/10 transition-all">
                                                 <Icon name="solar:home-2-outline" class="size-4 opacity-60" />
-                                                <span class="text-sm">Dashboard</span>
+                                                <span class="text-sm">Profile</span>
                                             </NuxtLink>
                                         </HeadlessMenuItem>
                                         <!-- Logout -->

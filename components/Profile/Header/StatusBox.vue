@@ -25,18 +25,23 @@ const isLongValue = computed(() => {
 <template>
     <div
         :class="[
-            props.mode === 'common' && 'border-white/20 bg-white/10 text-white',
+            props.mode === 'common' && 'border-white bg-white text-slate-900',
             props.mode === 'warning' && 'border-amber-200/30 bg-amber-300/15 text-white',
-            props.mode === 'success' && 'border-emerald-200/25 bg-emerald-400/20 text-white',
+            props.mode === 'success' && 'bg-success !text-white',
             props.mode === 'danger' && 'border-rose-200/25 bg-rose-400/20 text-white',
             props.mode === 'primary' && 'border-sky-200/25 bg-sky-400/20 text-white',
-            'flex min-h-[112px] w-full flex-col items-center justify-center gap-1 rounded-xl border px-3 py-3 text-center shadow-md shadow-slate-950/10 backdrop-blur-sm transition-all duration-200 hover:scale-[1.02] sm:min-h-[116px] sm:px-4',
+            props.mode === 'success'
+                ? 'text-center p-2 text-sm font-light rounded-2xl w-full min-h-20 flex flex-col items-center place-content-center gap-1 ring-4 !ring-slate-200/10'
+                : 'flex min-h-20 w-full flex-col items-center justify-center gap-1 rounded-xl border px-3 py-2 text-center shadow-md shadow-slate-950/10 backdrop-blur-sm transition-all duration-200 hover:scale-[1.02] sm:px-3',
         ]"
     >
         <!-- العنوان -->
         <div
             v-if="props.title"
-            class="w-full text-[9px] font-semibold uppercase tracking-[0.14em] text-white/75 line-clamp-1 sm:text-[10px]"
+            :class="[
+                'w-full text-[9px] font-semibold uppercase tracking-[0.14em] line-clamp-1 sm:text-[10px]',
+                props.mode === 'common' ? 'text-slate-700' : props.image ? 'text-white' : 'text-white/75',
+            ]"
         >
             {{ props.title }}
         </div>
@@ -45,7 +50,7 @@ const isLongValue = computed(() => {
         <NuxtImg
             v-if="props.image"
             :src="props.image"
-            class="size-130 object-contain sm:size-130"
+            class="h-10 w-32 object-contain"
         />
 
         <!-- الأيقونة -->
@@ -53,9 +58,10 @@ const isLongValue = computed(() => {
 
         <!-- القيمة -->
         <div
-            v-if="props.value"
+            v-if="props.value && !props.image"
             :class="[
                 'w-full break-words px-0.5 text-xs font-semibold capitalize leading-tight sm:text-sm',
+                'text-white',
                 isLongValue ? 'line-clamp-2 text-[11px] sm:text-xs' : '',
             ]"
             :title="String(props.value)"
