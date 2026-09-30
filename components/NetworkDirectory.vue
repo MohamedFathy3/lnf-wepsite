@@ -7,7 +7,45 @@ const props = defineProps<{
 }>();
 
 const resources = useResourceStore();
-const rows = ref<User[]>([]);
+type DirectoryCountry = {
+    name?: string | null;
+    imageUrl?: string | null;
+};
+
+type DirectoryNetwork = {
+    name?: string | null;
+    imageUrl?: string | null;
+    email?: string | null;
+    city?: string | null;
+    website?: string | null;
+    country?: DirectoryCountry | null;
+};
+
+type DirectoryRow = {
+    id: number;
+    name: string;
+    email?: string | null;
+    company_email?: string | null;
+    city?: string | null;
+    country?: DirectoryCountry | null;
+    imageUrl?: string | null;
+    type_company?: string | null;
+    user?: DirectoryNetwork | null;
+};
+
+type DirectoryResponse = {
+    data: DirectoryRow[];
+    meta?: {
+        current_page?: number;
+        last_page?: number;
+        total?: number;
+        per_page?: number;
+        from?: number | null;
+        to?: number | null;
+    };
+};
+
+const rows = ref<DirectoryRow[]>([]);
 const searchInit = ref<boolean>(false);
 
 const sortByList = [
@@ -73,6 +111,7 @@ const {
         Authorization: `Bearer ${userStore.token}`
     }
 });
+const directoryResponse = computed(() => directory.value as DirectoryResponse | null);
 
 const isLoading = ref(false);
 
@@ -105,16 +144,10 @@ const v$ = useVuelidate(rules, serverParams.value.filters);
 const applyFilter = async () => {
     isLoading.value = true;
     searchInit.value = true;
-    const result = await v$.value.$validate();
-    if (!result) {
-        isLoading.value = false;
-        searchInit.value = false;
-        useToast({ title: 'Error', message: 'Please select a country', type: 'error', duration: 5000 });
-        return false;
-    }
+  
     await execute();
-    if (directory.value) {
-        rows.value = (directory.value as ApiResponse).data as User[];
+    if (directoryResponse.value) {
+        rows.value = directoryResponse.value.data;
     }
     isLoading.value = false;
 };
@@ -235,12 +268,12 @@ const headerSettings = {
                     <template v-if="status !== 'pending'">
                         <!-- Desktop Table -->
                         <div class="md:block hidden">
-                            <table class="table table-report font-light text-sm">
+                            <table class="table table-report min-w-[760px] font-light text-sm">
                                 <thead>
                                     <tr class="uppercase">
-                                        <th class="text-left">Name</th>
-                                        <th class="text-left">Country</th>
-                                        <th class="text-left">HQ/Branch</th>
+                                        <th class="text-left">Member</th>
+                                        <th class="text-left">Member Location</th>
+                                        <th class="text-left">Network</th>
                                         <th class="text-right">Action</th>
                                     </tr>
                                 </thead>
@@ -249,38 +282,28 @@ const headerSettings = {
                                         <tr v-for="row in rows" :key="row.id">
                                             <td>
                                                 <div class="flex items-center gap-3">
-                                                    <NuxtImg :alt="row.name" :src="row.imageUrl" :title="row.name" class="h-12 !rounded-md w-24 object-contain p-1 shrink-0" />
+                                                    <NuxtImg v-if="row.imageUrl" :alt="row.name" :src="row.imageUrl" :title="row.name" class="h-12 !rounded-md w-24 object-contain p-1 shrink-0" />
                                                     <div class="flex flex-col gap-0.5">
-                                                        <div class="flex items-center gap-1.5">
-                                                            <span class="truncate font-normal 2xl:max-w-64 max-w-44">{{ row.name }}</span>
-                                                        </div>
+                                                        <span class="truncate font-normal 2xl:max-w-64 max-w-44">{{ row.name }}</span>
                                                         <div class="text-xs opacity-75 mt-0.5 lowercase truncate 2xl:max-w-64 max-w-44">
-                                                            {{ row.email.toLowerCase() }}
-                                                        </div>
-                                                        <div v-if="row.user" class="text-xs opacity-50 flex items-center gap-1">
-                                                            <Icon name="solar:user-circle-outline" class="size-3" />
-                                                            {{ row.user.name }}
+                                                            {{ row.email || row.company_email || '—' }}
                                                         </div>
                                                     </div>
                                                 </div>
                                             </td>
                                             <td>
-                                                <div class="flex items-center gap-2">
-                                                    <NuxtImg :src="row.country.imageUrl" class="h-10 !rounded-md w-16 object-cover shrink-0 mr-1.5" />
-                                                    <div>
-                                                        <div class="truncate font-normal 2xl:max-w-64 max-w-44">
-                                                            {{ row.country.name }}
-                                                        </div>
-                                                        <div class="capitalize font-light text-xs opacity-80">
-                                                            {{ row.city.toLowerCase() }}
-                                                        </div>
-                                                    </div>
-                                                </div>
+                                                <div class="font-normal">{{ row.country?.name || '—' }}</div>
+                                                <div class="capitalize font-light text-xs opacity-80">{{ row.city || '—' }}</div>
                                             </td>
                                             <td>
-                                                <div>
-                                                    <ProfileMemberType :status="row.type_company as string" />
-                                                </div>
+                                                <NuxtImg
+                                                    v-if="row.user?.imageUrl"
+                                                    :alt="row.user.name || 'Network logo'"
+                                                    :src="row.user.imageUrl"
+                                                    :title="row.user.name || 'Network logo'"
+                                                    class="h-12 w-24 object-contain"
+                                                />
+                                                <span v-else>—</span>
                                             </td>
                                             <td class="text-right">
                                                 <NuxtLink :href="'/member/' + row.id" target="_blank">
@@ -307,34 +330,31 @@ const headerSettings = {
                         <ul class="block md:hidden space-y-5">
                             <li v-for="row in rows" :key="row.id" class="p-5 bg-white/50 border rounded-xl divide-y divide-dashed text-right">
                                 <div class="py-3 flex items-start justify-between gap-3">
-                                    <NuxtImg :alt="row.name" :src="row.imageUrl" :title="row.name" class="ring-4 ring-slate-400/10 h-12 !rounded-md w-24 object-contain p-1 shrink-0 bg-white" />
+                                    <NuxtImg v-if="row.imageUrl" :alt="row.name" :src="row.imageUrl" :title="row.name" class="ring-4 ring-slate-400/10 h-12 !rounded-md w-24 object-contain p-1 shrink-0 bg-white" />
                                     <div class="flex flex-col gap-0.5">
-                                        <div class="flex items-center gap-1.5">
-                                            <span class="truncate font-normal 2xl:max-w-64 max-w-44">{{ row.name }}</span>
-                                        </div>
+                                        <span class="truncate font-normal 2xl:max-w-64 max-w-44">{{ row.name }}</span>
                                         <div class="text-xs opacity-75 mt-0.5 lowercase truncate 2xl:max-w-64 max-w-44">
-                                            {{ row.email.toLowerCase() }}
-                                        </div>
-                                        <div v-if="row.user" class="text-xs opacity-50 flex items-center gap-1">
-                                            <Icon name="solar:user-circle-outline" class="size-3" />
-                                            {{ row.user.name }}
+                                            {{ row.email || row.company_email || '—' }}
                                         </div>
                                     </div>
                                 </div>
-                                <div class="py-3 flex items-start justify-between gap-2">
-                                    <NuxtImg :src="row.country.imageUrl" class="ring-4 ring-slate-400/10 h-10 !rounded-md w-16 object-cover shrink-0 mr-1.5" />
+                                <div class="py-3 grid grid-cols-2 gap-4 text-left">
                                     <div>
-                                        <div class="truncate font-normal 2xl:max-w-64 max-w-44">
-                                            {{ row.country.name }}
-                                        </div>
-                                        <div class="capitalize font-light text-xs opacity-80">
-                                            {{ row.city.toLowerCase() }}
-                                        </div>
+                                        <div class="text-xs opacity-60">Member Location</div>
+                                        <div class="font-normal">{{ row.country?.name || '—' }}</div>
+                                        <div class="text-xs opacity-80">{{ row.city || '—' }}</div>
                                     </div>
-                                </div>
-                                <div class="py-3 flex items-center justify-between gap-5">
-                                    <div class="opacity-75 text-sm font-light text-left">HQ/BRANCH</div>
-                                    <ProfileMemberType :status="row.type_company as string" />
+                                    <div>
+                                        <div class="text-xs opacity-60">Network</div>
+                                        <NuxtImg
+                                            v-if="row.user?.imageUrl"
+                                            :alt="row.user.name || 'Network logo'"
+                                            :src="row.user.imageUrl"
+                                            :title="row.user.name || 'Network logo'"
+                                            class="h-12 max-w-32 object-contain"
+                                        />
+                                        <span v-else>—</span>
+                                    </div>
                                 </div>
                                 <div class="py-3">
                                     <NuxtLink :href="'/member/' + row.id" target="_blank">
@@ -359,7 +379,7 @@ const headerSettings = {
 
             <!-- Pagination -->
             <template v-if="searchInit">
-                <TablePagination :page="serverParams.page" :pending="status === 'pending'" :rows="directory as ApiResponse" class="mx-12" @change-page="changePage" />
+                <TablePagination :page="serverParams.page" :pending="status === 'pending'" :meta="directoryResponse?.meta" class="mx-12" @change-page="changePage" />
             </template>
         </template>
 
