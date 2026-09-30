@@ -9,6 +9,7 @@ const props = defineProps<{
 const resources = useResourceStore();
 const rows = ref<User[]>([]);
 const searchInit = ref<boolean>(false);
+const showValidationErrors = ref(false);
 
 const sortByList = [
     { name: 'Sort By Type', id: 'type_company' },
@@ -84,17 +85,20 @@ const resetFilter = async () => {
     };
 
     searchInit.value = false;
+    showValidationErrors.value = false;
+    v$.value.$reset();
     isLoading.value = false;
 };
 
 const rules = ref({
     countryId: { required },
 });
-const v$ = useVuelidate(rules, serverParams.value.filters);
+const v$ = useVuelidate(rules, computed(() => serverParams.value.filters));
 
 const applyFilter = async () => {
     isLoading.value = true;
     searchInit.value = true;
+    showValidationErrors.value = true;
     const result = await v$.value.$validate();
     if (!result) {
         isLoading.value = false;
@@ -150,7 +154,6 @@ const headerSettings = {
                         v-model="serverParams.filters.countryId"
                         :clearable="false"
                         :disabled="isLoading"
-                        :errors="v$.countryId.$errors"
                         :select-data="resources.countries"
                         imgvalue="imageUrl"
                         keyvalue="id"

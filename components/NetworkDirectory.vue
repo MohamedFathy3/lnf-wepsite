@@ -147,12 +147,6 @@ const headerSettings = {
     },
 };
 
-// تشغيل البحث تلقائياً عند التحميل
-onMounted(async () => {
-    if (userStore.token) {
-        await applyFilter();
-    }
-});
 </script>
 
 <template>
