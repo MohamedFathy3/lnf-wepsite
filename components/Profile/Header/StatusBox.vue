@@ -6,6 +6,7 @@ const props = withDefaults(
         image?: string | null;
         mode: string;
         value: string | number | null;
+        horizontal?: boolean;
     }>(),
     {
         title: null,
@@ -13,6 +14,7 @@ const props = withDefaults(
         icon: null,
         image: null,
         mode: 'common',
+        horizontal: false,
     },
 );
 
@@ -47,27 +49,26 @@ const isLongValue = computed(() => {
         </div>
 
         <!-- الصورة -->
-        <NuxtImg
-            v-if="props.image"
-            :src="props.image"
-            class="h-10 w-32 object-contain"
-        />
+        <div :class="props.horizontal ? 'flex w-full flex-1 items-center justify-between gap-3' : 'contents'">
+            <NuxtImg
+                v-if="props.image"
+                :src="props.image"
+                class="h-10 w-32 object-contain"
+            />
 
-        <!-- الأيقونة -->
-            <Icon v-else-if="props.icon" :name="props.icon" class="size-7 text-white/90 sm:size-8" />
+            <Icon v-else-if="props.icon" :name="props.icon" class="size-7 shrink-0 text-white/90 sm:size-8" />
 
-        <!-- القيمة -->
-        <div
-            v-if="props.value && !props.image"
-            :class="[
-                'w-full break-words px-0.5 text-xs font-semibold capitalize leading-tight sm:text-sm',
-                'text-white',
-                isLongValue ? 'line-clamp-2 text-[11px] sm:text-xs' : '',
-            ]"
-            :title="String(props.value)"
-        >
-            {{ props.value }}
+            <div
+                v-if="props.value && !props.image"
+                :class="[
+                    'break-words px-0.5 text-xs font-semibold capitalize leading-tight sm:text-sm text-white',
+                    props.horizontal ? 'ml-auto w-auto text-right' : 'w-full',
+                    isLongValue ? 'line-clamp-2 text-[11px] sm:text-xs' : '',
+                ]"
+                :title="String(props.value)"
+            >
+                {{ props.value }}
+            </div>
         </div>
     </div>
 </template>
-

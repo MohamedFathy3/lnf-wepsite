@@ -46,23 +46,15 @@ const getTypeName = (type: string) => {
 
                 <!-- Status Boxes -->
                 <div class="profile-header__status-wrap">
-                    <div class="profile-header__status grid w-full grid-cols-2 gap-2 sm:w-auto sm:min-w-[300px] sm:gap-3">
+                    <div class="profile-header__status grid w-full grid-cols-1 gap-1 sm:w-auto sm:min-w-[300px] sm:gap-3">
                         <!-- FPP Status -->
-                        <ProfileHeaderStatusBox
+                       
+
+                      <ProfileHeaderStatusBox
                             :icon="props.member.fpp ? 'solar:shield-check-outline' : 'solar:shield-cross-line-duotone'"
                             :mode="props.member.fpp ? 'success' : 'danger'"
                             :title="props.member.fpp ? 'FPP' : 'FPP'"
                             :value="props.member.fpp ? 'Active' : 'Inactive'"
-                        />
-
-                        <!-- Network -->
-                        <ProfileHeaderStatusBox
-                            v-if="props.member.user"
-                            :icon="props.member.user ? 'solar:shield-check-outline' : 'solar:shield-cross-line-duotone'"
-
-                            :image="props.member.currentNetworkStatus?.imageUrl || props.member.user.imageUrl"
-                            :value="props.member.currentNetworkStatus?.name || props.member.user.name"
-                            mode="common"
                         />
                     </div>
                 </div>

@@ -3,6 +3,8 @@ const props = defineProps<{
     member: User;
 }>();
 
+const activeNetworks = computed(() => props.member.users?.filter((network) => network.active) || []);
+
 const copyEmail = async (email: string) => {
     await navigator.clipboard.writeText(email);
     useToast({ title: 'Copied', message: 'Company email copied to clipboard', type: 'success', duration: 2500 });
@@ -87,6 +89,31 @@ const copyEmail = async (email: string) => {
                             {{ props.member.iataFiata || 'Not provided' }}
                         </span>
                     </div>
+                </div>
+
+                <div v-if="activeNetworks.length > 1" class="mt-6 border-t border-slate-100 pt-5">
+                    <div class="mb-3 flex items-center gap-2">
+                        <Icon class="size-4 text-primary" name="solar:share-circle-linear" />
+                        <h3 class="text-sm font-semibold text-slate-800">Active Networks</h3>
+                    </div>
+                    <ul class="grid gap-3 sm:grid-cols-2">
+                        <li
+                            v-for="network in activeNetworks"
+                            :key="network.id"
+                            class="flex min-w-0 items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50/70 p-3"
+                        >
+                            <div class="flex size-16 shrink-0 items-center justify-center rounded-xl border border-slate-100 bg-white p-2 shadow-sm">
+                                <NuxtImg
+                                    v-if="network.imageUrl"
+                                    :alt="network.name"
+                                    :src="network.imageUrl"
+                                    class="max-h-full max-w-full object-contain"
+                                />
+                                <Icon v-else class="size-7 text-slate-300" name="solar:share-circle-linear" />
+                            </div>
+                            <span class="min-w-0 break-words text-sm font-medium text-slate-800">{{ network.name }}</span>
+                        </li>
+                    </ul>
                 </div>
             </div>
 

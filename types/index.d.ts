@@ -518,6 +518,15 @@ type Network = {
     expired?: boolean;
 };
 
+type MemberNetwork = {
+    id: number;
+    name: string;
+    active: boolean;
+    email?: string | null;
+    phone?: string | null;
+    imageUrl?: string | null;
+};
+
 type FAQ = {
     id: number;
     name: string;
@@ -605,6 +614,7 @@ type User = {
     image: Media | null;
     services?: number[] | Resource[];
     certificates?: number[] | Resource[];
+    users?: MemberNetwork[];
     networks?: Network[];
     currentNetworkStatus?: Network;
     pendingNetworkStatus?: Network[];

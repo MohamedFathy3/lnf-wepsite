@@ -13,12 +13,14 @@ type DirectoryCountry = {
 };
 
 type DirectoryNetwork = {
+    id?: number;
     name?: string | null;
     imageUrl?: string | null;
     email?: string | null;
     city?: string | null;
     website?: string | null;
     country?: DirectoryCountry | null;
+    active?: boolean;
 };
 
 type DirectoryRow = {
@@ -31,6 +33,7 @@ type DirectoryRow = {
     imageUrl?: string | null;
     type_company?: string | null;
     user?: DirectoryNetwork | null;
+    users?: DirectoryNetwork[];
 };
 
 type DirectoryResponse = {
@@ -47,6 +50,11 @@ type DirectoryResponse = {
 
 const rows = ref<DirectoryRow[]>([]);
 const searchInit = ref<boolean>(false);
+
+const getRowNetworks = (row: DirectoryRow) => {
+    if (row.users?.length) return row.users.filter((network) => network.active !== false);
+    return row.user && row.user.active !== false ? [row.user] : [];
+};
 
 const sortByList = [
     { name: 'Sort By Type', id: 'type_company' },
@@ -296,13 +304,22 @@ const headerSettings = {
                                                 <div class="capitalize font-light text-xs opacity-80">{{ row.city || '—' }}</div>
                                             </td>
                                             <td>
-                                                <NuxtImg
-                                                    v-if="row.user?.imageUrl"
-                                                    :alt="row.user.name || 'Network logo'"
-                                                    :src="row.user.imageUrl"
-                                                    :title="row.user.name || 'Network logo'"
-                                                    class="h-12 w-24 object-contain"
-                                                />
+                                                <div v-if="getRowNetworks(row).length" class="flex flex-wrap items-center gap-2">
+                                                    <div
+                                                        v-for="(network, index) in getRowNetworks(row)"
+                                                        :key="network.id || `${row.id}-${index}`"
+                                                        class="flex h-12 w-24 items-center justify-center rounded border border-slate-100 bg-white p-1"
+                                                        :title="network.name || 'Network'"
+                                                    >
+                                                        <NuxtImg
+                                                            v-if="network.imageUrl"
+                                                            :alt="network.name || 'Network logo'"
+                                                            :src="network.imageUrl"
+                                                            class="max-h-full max-w-full object-contain"
+                                                        />
+                                                        <span v-else class="truncate text-center text-xs">{{ network.name || 'Network' }}</span>
+                                                    </div>
+                                                </div>
                                                 <span v-else>—</span>
                                             </td>
                                             <td class="text-right">
@@ -346,13 +363,22 @@ const headerSettings = {
                                     </div>
                                     <div>
                                         <div class="text-xs opacity-60">Network</div>
-                                        <NuxtImg
-                                            v-if="row.user?.imageUrl"
-                                            :alt="row.user.name || 'Network logo'"
-                                            :src="row.user.imageUrl"
-                                            :title="row.user.name || 'Network logo'"
-                                            class="h-12 max-w-32 object-contain"
-                                        />
+                                        <div v-if="getRowNetworks(row).length" class="mt-1 flex flex-wrap items-center gap-2">
+                                            <div
+                                                v-for="(network, index) in getRowNetworks(row)"
+                                                :key="network.id || `${row.id}-${index}`"
+                                                class="flex h-12 w-24 items-center justify-center rounded border border-slate-100 bg-white p-1"
+                                                :title="network.name || 'Network'"
+                                            >
+                                                <NuxtImg
+                                                    v-if="network.imageUrl"
+                                                    :alt="network.name || 'Network logo'"
+                                                    :src="network.imageUrl"
+                                                    class="max-h-full max-w-full object-contain"
+                                                />
+                                                <span v-else class="truncate text-center text-xs">{{ network.name || 'Network' }}</span>
+                                            </div>
+                                        </div>
                                         <span v-else>—</span>
                                     </div>
                                 </div>

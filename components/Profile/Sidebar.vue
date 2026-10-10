@@ -14,6 +14,8 @@ const groupCompanies = computed(() => {
     return profile.group?.companies || profile.companies || [];
 });
 
+const profileNetworks = computed(() => props.profile.users || []);
+
 const contactPerson = computed(() => {
     const networkPerson = props.profile?.contactPersonNetwork?.[0];
     const companyPerson = props.profile?.contactPersons?.[0];
@@ -32,6 +34,8 @@ const aboutText = computed(() => {
 <template>
     <aside class="flex flex-col gap-4 sm:gap-5">
         <ProfileBranchesBlock v-if="groupCompanies.length" :members="groupCompanies" />
+
+     
 
         <section class="profile-side-card overflow-hidden">
             <div class="profile-side-card__heading px-3 pt-4 sm:px-5 sm:pt-5">

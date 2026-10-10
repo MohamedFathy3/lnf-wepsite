@@ -47,7 +47,14 @@ const member = ref({
     unhashed_password: null,
     fpp: false,
     active: false,
-    user: null,
+    user: null as MemberNetwork | null,
+    users: [] as MemberNetwork[],
+});
+
+const associatedUsers = computed<MemberNetwork[]>(() => {
+    const users = member.value.users;
+    if (users.length) return users;
+    return member.value.users.length === 0 && member.value.user ? [member.value.user] : [];
 });
 
 function fillData() {
@@ -92,6 +99,7 @@ function fillData() {
         fpp: user.fpp === true || user.fpp === 'yes',
         active: user.active === true,
         user: user.user || null,
+        users: Array.isArray(user.users) ? user.users : [],
     };
 }
 
@@ -211,15 +219,29 @@ watch(
                             disabled 
                         />
                         
-                        <div v-if="member.user" class="lg:col-span-12">
-                            <label class="form-label opacity-75 font-light">Associated User</label>
-                            <div class="flex items-center gap-3 p-2 bg-slate-50 rounded-lg border">
-                                <NuxtImg :src="member.user.imageUrl" class="w-8 h-8 rounded-full object-cover" />
-                                <div>
-                                    <div class="text-sm font-medium">{{ member.user.name }}</div>
-                                    <div class="text-xs opacity-50">{{ member.user.email }}</div>
-                                </div>
-                            </div>
+                        <div v-if="associatedUsers.length" class="lg:col-span-12">
+                            <label class="form-label opacity-75 font-light">Associated Users</label>
+                            <ul class="grid gap-3 sm:grid-cols-2">
+                                <li
+                                    v-for="associatedUser in associatedUsers"
+                                    :key="associatedUser.id"
+                                    class="flex min-w-0 items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 p-3"
+                                >
+                                    <div class="flex size-16 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-slate-100 bg-white p-2 shadow-sm">
+                                        <NuxtImg
+                                            v-if="associatedUser.imageUrl"
+                                            :alt="associatedUser.name"
+                                            :src="associatedUser.imageUrl"
+                                            class="h-full w-full object-contain"
+                                        />
+                                        <Icon v-else class="size-7 text-slate-300" name="solar:buildings-2-linear" />
+                                    </div>
+                                    <div class="min-w-0">
+                                        <div class="break-words text-sm font-medium">{{ associatedUser.name }}</div>
+                                        <div class="break-all text-xs opacity-50">{{ associatedUser.email }}</div>
+                                    </div>
+                                </li>
+                            </ul>
                         </div>
 
                         <FormTextInput 
