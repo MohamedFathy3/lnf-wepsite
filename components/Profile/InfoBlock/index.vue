@@ -3,7 +3,11 @@ const props = defineProps<{
     member: User;
 }>();
 
-const activeNetworks = computed(() => props.member.users?.filter((network) => network.active) || []);
+const activeNetworks = computed(() => {
+    const networks = props.member.users || [];
+    if (networks.length > 0) return networks.filter((network) => network.active);
+    return props.member.user?.active ? [props.member.user] : [];
+});
 
 const copyEmail = async (email: string) => {
     await navigator.clipboard.writeText(email);
@@ -91,10 +95,10 @@ const copyEmail = async (email: string) => {
                     </div>
                 </div>
 
-                <div v-if="activeNetworks.length > 1" class="mt-6 border-t border-slate-100 pt-5">
+                <div v-if="activeNetworks.length > 0" class="mt-6 border-t border-slate-100 pt-5">
                     <div class="mb-3 flex items-center gap-2">
                         <Icon class="size-4 text-primary" name="solar:share-circle-linear" />
-                        <h3 class="text-sm font-semibold text-slate-800">Active Networks</h3>
+                        <h3 class="text-sm font-semibold text-slate-800"> Networks</h3>
                     </div>
                     <ul class="grid gap-3 sm:grid-cols-2">
                         <li

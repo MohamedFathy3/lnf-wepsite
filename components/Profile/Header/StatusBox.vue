@@ -33,8 +33,8 @@ const isLongValue = computed(() => {
             props.mode === 'danger' && 'border-rose-200/25 bg-rose-400/20 text-white',
             props.mode === 'primary' && 'border-sky-200/25 bg-sky-400/20 text-white',
             props.mode === 'success'
-                ? 'text-center p-2 text-sm font-light rounded-2xl w-full min-h-20 flex flex-col items-center place-content-center gap-1 ring-4 !ring-slate-200/10'
-                : 'flex min-h-20 w-full flex-col items-center justify-center gap-1 rounded-xl border px-3 py-2 text-center shadow-md shadow-slate-950/10 backdrop-blur-sm transition-all duration-200 hover:scale-[1.02] sm:px-3',
+                ? 'text-center p-2 text-sm font-light rounded-2xl w-full min-h-32 flex flex-col items-center place-content-center gap-1 ring-4 !ring-slate-200/10'
+                : 'flex min-h-32 w-full flex-col items-center justify-center gap-1 rounded-xl border px-3 py-2 text-center shadow-md shadow-slate-950/10 backdrop-blur-sm transition-all duration-200 hover:scale-[1.02] sm:px-3',
         ]"
     >
         <!-- العنوان -->

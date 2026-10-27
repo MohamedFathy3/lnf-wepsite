@@ -4,6 +4,15 @@ const props = defineProps<{
     member: any;
 }>();
 
+const activeNetworkLogo = computed(() => {
+    const networks = props.member.users || [];
+    if (networks.length > 1) return null;
+
+    const network = networks[0] || (props.member.user?.active ? props.member.user : null);
+    if (network && !network.active) return null;
+    return network?.imageUrl || null;
+});
+
 const membershipTypes = ref([
     { name: 'Member', value: 'member' },
     { name: 'Founder', value: 'founder' },
@@ -46,11 +55,23 @@ const getTypeName = (type: string) => {
 
                 <!-- Status Boxes -->
                 <div class="profile-header__status-wrap">
-                    <div class="profile-header__status grid w-full grid-cols-1 gap-1 sm:w-auto sm:min-w-[300px] sm:gap-3">
+                    <div
+                        class="profile-header__status grid w-full gap-2 sm:w-auto sm:min-w-[300px] sm:gap-3"
+                        :class="activeNetworkLogo ? 'grid-cols-2' : 'grid-cols-1'"
+                    >
                         <!-- FPP Status -->
-                       
-
-                      <ProfileHeaderStatusBox
+                        <div
+                            v-if="activeNetworkLogo"
+                            class="flex min-h-32 items-center justify-center rounded-2xl border border-white/30 bg-white p-3 shadow-xl shadow-slate-950/10 ring-4 ring-slate-200/10"
+                        >
+                            <NuxtImg
+                                alt="Network logo"
+                                :src="activeNetworkLogo"
+                                class="size-16 rounded-lg object-contain"
+                                loading="lazy"
+                            />
+                        </div>
+                        <ProfileHeaderStatusBox
                             :icon="props.member.fpp ? 'solar:shield-check-outline' : 'solar:shield-cross-line-duotone'"
                             :mode="props.member.fpp ? 'success' : 'danger'"
                             :title="props.member.fpp ? 'FPP' : 'FPP'"
@@ -101,7 +122,7 @@ const getTypeName = (type: string) => {
 .profile-header__status-wrap {
     width: 100%;
     min-width: 300px;
-    max-width: 300px;
+    max-width: 420px;
     margin-left: auto;
 }
 

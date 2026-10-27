@@ -614,6 +614,7 @@ type User = {
     image: Media | null;
     services?: number[] | Resource[];
     certificates?: number[] | Resource[];
+    user?: MemberNetwork | null;
     users?: MemberNetwork[];
     networks?: Network[];
     currentNetworkStatus?: Network;
