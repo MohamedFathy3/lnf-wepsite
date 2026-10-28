@@ -57,20 +57,10 @@ const getTypeName = (type: string) => {
                 <div class="profile-header__status-wrap">
                     <div
                         class="profile-header__status grid w-full gap-2 sm:w-auto sm:min-w-[300px] sm:gap-3"
-                        :class="activeNetworkLogo ? 'grid-cols-2' : 'grid-cols-1'"
+                        :class="activeNetworkLogo ? 'grid-cols-1' : 'grid-cols-1'"
                     >
                         <!-- FPP Status -->
-                        <div
-                            v-if="activeNetworkLogo"
-                            class="flex min-h-32 items-center justify-center rounded-2xl border border-white/30 bg-white p-3 shadow-xl shadow-slate-950/10 ring-4 ring-slate-200/10"
-                        >
-                            <NuxtImg
-                                alt="Network logo"
-                                :src="activeNetworkLogo"
-                                class="size-16 rounded-lg object-contain"
-                                loading="lazy"
-                            />
-                        </div>
+                     
                         <ProfileHeaderStatusBox
                             :icon="props.member.fpp ? 'solar:shield-check-outline' : 'solar:shield-cross-line-duotone'"
                             :mode="props.member.fpp ? 'success' : 'danger'"
