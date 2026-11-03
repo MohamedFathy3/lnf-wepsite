@@ -9,9 +9,16 @@ const props = withDefaults(
     { isProfile: false },
 );
 
-const groupCompanies = computed(() => {
-    const profile = props.profile as User & { group?: { companies?: any[] }; companies?: any[] };
-    return profile.group?.companies || profile.companies || [];
+const profileGroups = computed(() => {
+    const groups = props.profile.groupes?.length
+        ? props.profile.groupes
+        : props.profile.group
+          ? [props.profile.group]
+          : props.profile.companies?.length
+            ? [{ id: 0, name: '', active: true, companies: props.profile.companies }]
+            : [];
+
+    return groups.filter((group) => group.companies?.length);
 });
 
 const profileNetworks = computed(() => props.profile.users || []);
@@ -33,7 +40,19 @@ const aboutText = computed(() => {
 
 <template>
     <aside class="flex flex-col gap-4 sm:gap-5">
-        <ProfileBranchesBlock v-if="groupCompanies.length" :members="groupCompanies" />
+        <ProfileBranchesBlock
+            v-if="profileGroups.length === 1"
+            :members="profileGroups[0].companies || []"
+        />
+        <div v-else-if="profileGroups.length > 1" class="flex flex-col gap-5">
+            <ProfileBranchesBlock
+                v-for="group in profileGroups"
+                :key="group.id"
+                :group-name="group.name"
+                :members="group.companies || []"
+                show-summary
+            />
+        </div>
 
      
 

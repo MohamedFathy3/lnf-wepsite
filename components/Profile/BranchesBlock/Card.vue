@@ -40,7 +40,7 @@ const memberLink = computed(() => {
 
                     <!-- ✅ الدولة + المدينة -->
                     <div class="flex items-center text-xs mt-1 text-slate-500 flex-wrap gap-x-1">
-                        <ApplicationCountry :country="props.member?.country" size="xs" />
+                        <ApplicationCountry v-if="props.member?.country" :country="props.member.country" size="xs" />
                         <div v-if="props.member?.city" class="font-light truncate max-w-full">
                             , {{ props.member.city }}
                         </div>

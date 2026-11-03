@@ -557,7 +557,8 @@ type Role = {
 type UserGroup = {
     id: number;
     name: string;
-    active: boolean;
+    active: boolean | number;
+    type_company?: string | null;
     companies?: User[];
 };
 
@@ -583,6 +584,8 @@ type User = {
     email: string;
     wsaId?: string | null;
     group?: UserGroup;
+    groupes?: UserGroup[];
+    companies?: User[];
     addressLineOne: string;
     addressLineTwo: string | null;
     mapLong?: string;

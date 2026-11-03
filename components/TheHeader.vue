@@ -86,16 +86,11 @@ const logout = () => {
                             </NuxtLink>
                         </div>
                     </template>
-
-                    <!-- Menu Toggle for Mobile -->
-                    <button class="lg:hidden btn btn-sm btn-secondary gap-2">
-                        <Icon name="solar:hamburger-menu-outline" class="size-5" />
-                    </button>
                 </div>
 
                 <!-- الـ Menu -->
                 <div class="mt-1 flex justify-end">
-                    <ul class="flex items-center divide-x divide-slate-100/10 font-medium">
+                    <ul v-if="headerMenu" class="flex items-center divide-x divide-slate-100/10 font-medium">
                         <template v-for="item in (headerMenu as NavigationMenu).menuItems as NavigationMenuItem[]" :key="item.id">
                             <template v-if="item.children.length > 0">
                                 <li>
@@ -142,6 +137,91 @@ const logout = () => {
                     </ul>
                 </div>
             </div>
+
+            <HeadlessMenu as="div" class="relative lg:hidden">
+                <HeadlessMenuButton
+                    class="btn btn-sm btn-primary gap-2"
+                    aria-label="Open navigation menu"
+                >
+                    <Icon name="solar:hamburger-menu-outline" class="size-5" />
+                </HeadlessMenuButton>
+                <TransitionExpand>
+                    <HeadlessMenuItems
+                        class="absolute right-0 z-50 mt-2 max-h-[calc(100vh-7rem)] w-72 max-w-[calc(100vw-2rem)] overflow-y-auto rounded-xl border border-primary/20 bg-white p-2 text-slate-700 shadow-xl focus:outline-none"
+                    >
+                        <ul class="space-y-1">
+                            <HeadlessMenuItem as="li">
+                                <NuxtLink href="/" class="flex items-center gap-3 rounded-lg px-3 py-2 hover:bg-primary/10">
+                                    <Icon name="solar:home-2-outline" class="size-5 shrink-0 text-primary" />
+                                    <span>Home</span>
+                                </NuxtLink>
+                            </HeadlessMenuItem>
+                            <template v-if="headerMenu">
+                                <template v-for="item in (headerMenu as NavigationMenu).menuItems as NavigationMenuItem[]" :key="item.id">
+                                    <li v-if="item.children.length > 0" class="py-1">
+                                        <div class="flex items-center gap-3 px-3 py-2 font-semibold">
+                                            <Icon v-if="item.icon" :name="item.icon" class="size-5 shrink-0 text-primary" />
+                                            <span class="text-primary">{{ item.name }}</span>
+                                        </div>
+                                        <ul class="ml-5 border-l border-primary/20 pl-2">
+                                            <HeadlessMenuItem v-for="child in item.children" :key="child.id" as="li">
+                                                <NuxtLink
+                                                    :href="child.link"
+                                                    class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm hover:bg-primary/10"
+                                                >
+                                                    <Icon v-if="child.icon" :name="child.icon" class="size-4 shrink-0 text-primary" />
+                                                    <span>{{ child.name }}</span>
+                                                </NuxtLink>
+                                            </HeadlessMenuItem>
+                                        </ul>
+                                    </li>
+                                    <HeadlessMenuItem v-else as="li">
+                                        <NuxtLink
+                                            :href="item.link"
+                                            class="flex items-center gap-3 rounded-lg px-3 py-2 hover:bg-primary/10"
+                                        >
+                                            <Icon v-if="item.icon" :name="item.icon" class="size-5 shrink-0 text-primary" />
+                                            <span>{{ item.name }}</span>
+                                        </NuxtLink>
+                                    </HeadlessMenuItem>
+                                </template>
+                            </template>
+                            <li class="my-1 border-t border-primary/20"></li>
+                            <template v-if="userStore.token">
+                                <HeadlessMenuItem as="li">
+                                    <NuxtLink href="/dashboard" class="flex items-center gap-3 rounded-lg px-3 py-2 hover:bg-primary/10">
+                                        <Icon name="solar:user-id-outline" class="size-5 shrink-0 text-primary" />
+                                        <span>Profile</span>
+                                    </NuxtLink>
+                                </HeadlessMenuItem>
+                                <HeadlessMenuItem as="li">
+                                    <button
+                                        class="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-danger hover:bg-danger/10"
+                                        @click="logout"
+                                    >
+                                        <Icon name="solar:logout-2-outline" class="size-5 shrink-0" />
+                                        <span>Logout</span>
+                                    </button>
+                                </HeadlessMenuItem>
+                            </template>
+                            <template v-else>
+                                <HeadlessMenuItem as="li">
+                                    <NuxtLink href="/application-form" class="flex items-center gap-3 rounded-lg px-3 py-2 hover:bg-primary/10">
+                                        <Icon name="solar:documents-linear" class="size-5 shrink-0 text-primary" />
+                                        <span>Application Form</span>
+                                    </NuxtLink>
+                                </HeadlessMenuItem>
+                                <HeadlessMenuItem as="li">
+                                    <NuxtLink href="/login" class="flex items-center gap-3 rounded-lg px-3 py-2 hover:bg-primary/10">
+                                        <Icon name="solar:login-3-outline" class="size-5 shrink-0 text-primary" />
+                                        <span>Login</span>
+                                    </NuxtLink>
+                                </HeadlessMenuItem>
+                            </template>
+                        </ul>
+                    </HeadlessMenuItems>
+                </TransitionExpand>
+            </HeadlessMenu>
         </div>
     </div>
 </template>
