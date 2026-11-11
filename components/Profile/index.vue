@@ -15,7 +15,7 @@ const props = defineProps<{
             <div class="container mx-auto max-w-7xl">
                 <div class="grid gap-5 sm:gap-6 lg:grid-cols-12 lg:items-start">
                     <main class="order-2 lg:order-1 lg:col-span-7">
-                        <ProfileInfoBlock :member="props.profile" />
+                        <ProfileInfoBlock :can-edit="props.isProfile" :member="props.profile" />
                     </main>
                     <div class="order-1 lg:order-2 lg:col-span-5">
                         <ProfileSidebar :is-profile="props.isProfile" :profile="props.profile" />

@@ -615,6 +615,7 @@ type User = {
     country: Country;
     imageUrl: string;
     image: Media | null;
+    member_services?: { id: number; name: string; active?: boolean | number }[];
     services?: number[] | Resource[];
     certificates?: number[] | Resource[];
     user?: MemberNetwork | null;

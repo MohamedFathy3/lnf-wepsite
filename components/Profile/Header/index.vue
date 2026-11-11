@@ -4,30 +4,41 @@ const props = defineProps<{
     member: any;
 }>();
 
-const activeNetworkLogo = computed(() => {
-    const networks = props.member.users || [];
-    if (networks.length > 1) return null;
+const membershipTypeNames: Record<string, string> = {
+    member: 'Member',
+    founder: 'Founder',
+    partner: 'Partner',
+    vendor: 'Vendor',
+    non_member: 'Non Member',
+    wsa_team: 'WSA Team',
+    global_partner: 'Global Partner',
+    associate: 'Associate',
+    global_client: 'Global Client',
+    ucn_hq: 'UCN HQ',
+    ucn_china: 'UCN China',
+};
 
-    const network = networks[0] || (props.member.user?.active ? props.member.user : null);
-    if (network && !network.active) return null;
-    return network?.imageUrl || null;
+const normalizedMemberType = computed(() => {
+    const type = props.member?.type;
+    return typeof type === 'string' ? type.trim().toLowerCase().replace(/[\s-]+/g, '_') : '';
 });
 
-const membershipTypes = ref([
-    { name: 'Member', value: 'member' },
-    { name: 'Founder', value: 'founder' },
-    { name: 'Partner', value: 'partner' },
-    { name: 'Vendor', value: 'vendor' },
-    { name: 'Non Member', value: 'non_member' },
-    { name: 'WSA Team', value: 'wsa_team' },
-]);
+const memberTypeName = computed(() => {
+    const type = props.member?.type;
+    if (typeof type !== 'string' || !type.trim()) return 'Not provided';
+
+    return (
+        membershipTypeNames[normalizedMemberType.value] ||
+        type.trim().replace(/[_-]+/g, ' ').replace(/\b\w/g, (letter) => letter.toUpperCase())
+    );
+});
 
 const getTypeMode = (type: string) => {
     switch (type) {
         case 'founder':
             return 'warning';
         case 'member':
-            return 'primary';
+            return 'member';
         case 'vendor':
             return 'success';
         case 'partner':
@@ -41,9 +52,7 @@ const getTypeMode = (type: string) => {
     }
 };
 
-const getTypeName = (type: string) => {
-    return membershipTypes.value.find((t) => t.value === type)?.name || type;
-};
+const memberTypeMode = computed(() => getTypeMode(normalizedMemberType.value));
 </script>
 
 <template>
@@ -55,17 +64,19 @@ const getTypeName = (type: string) => {
 
                 <!-- Status Boxes -->
                 <div class="profile-header__status-wrap">
-                    <div
-                        class="profile-header__status grid w-full gap-2 sm:w-auto sm:min-w-[300px] sm:gap-3"
-                        :class="activeNetworkLogo ? 'grid-cols-1' : 'grid-cols-1'"
-                    >
+                    <div class="profile-header__status grid w-full grid-cols-2 gap-4">
                         <!-- FPP Status -->
-                     
                         <ProfileHeaderStatusBox
                             :icon="props.member.fpp ? 'solar:shield-check-outline' : 'solar:shield-cross-line-duotone'"
                             :mode="props.member.fpp ? 'success' : 'danger'"
-                            :title="props.member.fpp ? 'FPP' : 'FPP'"
-                            :value="props.member.fpp ? 'Active' : 'Inactive'"
+                            :title="`FPP ${props.member.fpp ? 'Active' : 'Inactive'}`"
+                            :value="null"
+                        />
+
+                        <ProfileHeaderStatusBox
+                            :mode="memberTypeMode"
+                            :title="'Member Type'"
+                            :value="memberTypeName"
                         />
                     </div>
                 </div>
@@ -111,8 +122,8 @@ const getTypeName = (type: string) => {
 
 .profile-header__status-wrap {
     width: 100%;
-    min-width: 300px;
-    max-width: 420px;
+    min-width: 0;
+    max-width: 280px;
     margin-left: auto;
 }
 
@@ -167,8 +178,7 @@ const getTypeName = (type: string) => {
     }
 
     .profile-header__status-wrap {
-        min-width: 0;
-        margin-right: auto;
+        margin-inline: auto;
     }
 
     .profile-header__tagline {

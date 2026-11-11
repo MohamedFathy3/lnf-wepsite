@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 const props = defineProps<{
     member: User;
+    canEdit?: boolean;
 }>();
 
 const activeNetworks = computed(() => {
@@ -8,6 +9,10 @@ const activeNetworks = computed(() => {
     if (networks.length > 0) return networks.filter((network) => network.active);
     return props.member.user?.active ? [props.member.user] : [];
 });
+
+const memberServices = computed(() =>
+    (props.member.member_services || []).filter((service) => typeof service.name === 'string' && service.name.trim()),
+);
 
 const copyEmail = async (email: string) => {
     await navigator.clipboard.writeText(email);
@@ -27,6 +32,7 @@ const copyEmail = async (email: string) => {
                 <div class="typewriter-text mt-0.5 text-xs text-slate-400">Key details and contact channels</div>
             </div>
             <ProfileUpdateButton
+                v-if="props.canEdit"
                 class="w-full sm:w-auto"
                 label="Edit Company"
                 icon="solar:pen-outline"
@@ -93,6 +99,24 @@ const copyEmail = async (email: string) => {
                             {{ props.member.iataFiata || 'Not provided' }}
                         </span>
                     </div>
+                </div>
+
+                <div v-if="memberServices.length" class="mt-6 border-t border-dashed border-slate-200 pt-5">
+                    <div class="mb-3 flex items-center gap-3">
+                        <span class="flex size-7 shrink-0 items-center justify-center rounded-full border border-slate-300 text-slate-500">
+                            <Icon class="size-4" name="solar:infinity-linear" />
+                        </span>
+                        <h3 class="text-base font-medium text-slate-800">Services</h3>
+                    </div>
+                    <ul class="flex flex-wrap gap-2">
+                        <li
+                            v-for="service in memberServices"
+                            :key="service.id"
+                            class="rounded-full bg-[#0b456a] px-4 py-1.5 text-sm font-medium text-white"
+                        >
+                            {{ service.name }}
+                        </li>
+                    </ul>
                 </div>
 
                 <div v-if="activeNetworks.length > 0" class="mt-6 border-t border-slate-100 pt-5">

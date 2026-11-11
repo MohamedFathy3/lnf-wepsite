@@ -23,6 +23,12 @@ type DirectoryNetwork = {
     active?: boolean;
 };
 
+type DirectoryService = {
+    id: number;
+    name: string;
+    active?: boolean | number;
+};
+
 type DirectoryRow = {
     id: number;
     name: string;
@@ -69,6 +75,23 @@ const sortingDirections = [
 
 const userStore = useUserStore();
 
+const {
+    data: servicesResponse,
+    error: servicesError,
+    execute: executeServices,
+} = await useApiFetch<{ data: DirectoryService[] }>('/api/member-servise/index', {
+    method: 'POST',
+    immediate: false,
+    headers: {
+        Authorization: `Bearer ${userStore.token}`,
+    },
+});
+const serviceOptions = computed(() =>
+    (servicesResponse.value?.data || [])
+        .filter((service) => service.active !== false && service.active !== 0)
+        .sort((first, second) => first.name.localeCompare(second.name)),
+);
+
 // ✅ جلب الـ Users للـ Select - بإضافة الـ token
 const userSearchParams = ref({
     filters: {status:"approved",},
@@ -81,10 +104,10 @@ const userSearchParams = ref({
 });
 
 // ✅ إضافة headers عشان نمرر الـ token
-const { data: usersData } = await useApiFetch('/api/user/index', {
+const { data: usersData, error: usersError, execute: executeUsers } = await useApiFetch('/api/user/index', {
     method: 'POST',
     body: userSearchParams,
-    lazy: true,
+    immediate: false,
     headers: {
         Authorization: `Bearer ${userStore.token}`
     }
@@ -96,9 +119,10 @@ const serverParams = ref({
         city: null,
         countryId: null,
         user_id: null,
+        member_service_ids: [] as number[],
     },
     networks: [1],
-    orderBy: 'type_company',
+    orderBy: 'name',
     orderByDirection: 'asc',
     perPage: 9,
     page: 1,
@@ -132,9 +156,10 @@ const resetFilter = async () => {
             city: null,
             countryId: null,
             user_id: null,
+            member_service_ids: [],
         },
         networks: [1],
-        orderBy: 'type_company',
+        orderBy: 'name',
         orderByDirection: 'asc',
         perPage: 9,
         page: 1,
@@ -159,6 +184,16 @@ const applyFilter = async () => {
     }
     isLoading.value = false;
 };
+
+onMounted(async () => {
+    if (!userStore.token) return;
+
+    await Promise.all([executeServices(), executeUsers()]);
+    if (servicesError.value) console.error('Failed to load directory services:', servicesError.value);
+    if (usersError.value) console.error('Failed to load directory networks:', usersError.value);
+
+    await applyFilter();
+});
 
 const changePage = async (value: number) => {
     if (!isNaN(value)) {
@@ -221,6 +256,42 @@ const headerSettings = {
                         class="lg:col-span-3"
                         placeholder="(Network)"
                     />
+
+                    <details class="group relative lg:col-span-3">
+                        <summary
+                            class="flex min-h-[42px] cursor-pointer list-none items-center justify-between rounded-xl border border-slate-200 bg-white px-4 text-sm text-slate-400 shadow-sm transition hover:border-slate-300 [&::-webkit-details-marker]:hidden"
+                            :class="{ 'cursor-not-allowed opacity-60': isLoading }"
+                            @click="isLoading && $event.preventDefault()"
+                        >
+                            <span>
+                                {{
+                                    serverParams.filters.member_service_ids.length
+                                        ? `Service (${serverParams.filters.member_service_ids.length})`
+                                        : 'Service'
+                                }}
+                            </span>
+                            <Icon class="size-4 transition-transform group-open:rotate-180" name="solar:alt-arrow-down-linear" />
+                        </summary>
+                        <div class="absolute left-0 right-0 z-30 mt-2 max-h-60 overflow-y-auto rounded-xl border border-slate-200 bg-white p-2 shadow-lg">
+                            <label
+                                v-for="service in serviceOptions"
+                                :key="service.id"
+                                class="flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2 text-sm text-slate-700 transition hover:bg-slate-50"
+                            >
+                                <input
+                                    v-model="serverParams.filters.member_service_ids"
+                                    :disabled="isLoading"
+                                    :value="service.id"
+                                    class="form-check-input size-4 rounded border-slate-300 text-primary focus:ring-primary"
+                                    type="checkbox"
+                                />
+                                <span>{{ service.name }}</span>
+                            </label>
+                            <p v-if="!serviceOptions.length" class="px-3 py-2 text-sm text-slate-400">
+                                No services available
+                            </p>
+                        </div>
+                    </details>
 
                     <FormTextInput 
                         v-model="serverParams.filters.city" 
