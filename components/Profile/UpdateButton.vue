@@ -21,6 +21,31 @@ const userStore = useUserStore();
 const formLoading = ref(false);
 const memberModalOpen = ref(false);
 const showPassword = ref(false);
+const servicesLoading = ref(false);
+const servicesLoaded = ref(false);
+
+type MemberServiceOption = {
+    id: number;
+    name: string;
+    active?: boolean | number;
+};
+
+const {
+    data: servicesResponse,
+    error: servicesError,
+    execute: executeServices,
+} = await useApiFetch<{ data: MemberServiceOption[] }>('/api/member-servise/index', {
+    method: 'POST',
+    immediate: false,
+    headers: {
+        Authorization: `Bearer ${userStore.token}`,
+    },
+});
+const serviceOptions = computed(() =>
+    (servicesResponse.value?.data || [])
+        .filter((service) => service.active !== false && service.active !== 0)
+        .sort((first, second) => first.name.localeCompare(second.name)),
+);
 
 function togglePassword() {
     showPassword.value = !showPassword.value;
@@ -49,6 +74,7 @@ const member = ref({
     active: false,
     user: null as MemberNetwork | null,
     users: [] as MemberNetwork[],
+    member_service_ids: [] as number[],
 });
 
 const associatedUsers = computed<MemberNetwork[]>(() => {
@@ -60,6 +86,15 @@ const associatedUsers = computed<MemberNetwork[]>(() => {
 function fillData() {
     const user = userStore.user as any;
     if (!user) return;
+
+    const assignedServices = Array.isArray(user.member_services) && user.member_services.length
+        ? user.member_services
+        : Array.isArray(user.services)
+            ? user.services
+            : [];
+    const serviceIds = assignedServices
+        .map((service: number | { id?: number | string }) => Number(typeof service === 'number' ? service : service?.id))
+        .filter((id: number) => Number.isInteger(id) && id > 0);
 
     let imageData = user.image || null;
     if (typeof imageData === 'string') {
@@ -100,7 +135,29 @@ function fillData() {
         active: user.active === true,
         user: user.user || null,
         users: Array.isArray(user.users) ? user.users : [],
+        member_service_ids: serviceIds,
     };
+}
+
+async function loadServices() {
+    if (servicesLoaded.value) return;
+
+    servicesLoading.value = true;
+    await executeServices();
+    servicesLoading.value = false;
+
+    if (servicesError.value) {
+        console.error('Failed to load profile services:', servicesError.value);
+        useToast({
+            title: 'Error',
+            message: 'Failed to load services. Please try again.',
+            type: 'error',
+            duration: 5000,
+        });
+        return;
+    }
+
+    servicesLoaded.value = true;
 }
 
 const updateMember = async () => {
@@ -131,6 +188,7 @@ const updateMember = async () => {
         image: imageId,
         fpp: member.value.fpp,
         active: member.value.active,
+        member_service_ids: member.value.member_service_ids,
     };
 
     if (member.value.unhashed_password && member.value.unhashed_password.length > 0) {
@@ -163,6 +221,7 @@ const updateMember = async () => {
 async function openMemberModal() {
     fillData();
     memberModalOpen.value = true;
+    await loadServices();
 }
 
 async function closeMemberModal() {
@@ -277,8 +336,29 @@ watch(
                             name="city" 
                             placeholder="City" 
                         />
-                        
-                      
+
+                        <div class="lg:col-span-12">
+                            <label class="form-label opacity-75 font-light">Services</label>
+                            <div v-if="servicesLoading" class="py-3 text-sm text-slate-400">
+                                Loading services...
+                            </div>
+                            <div v-else-if="serviceOptions.length" class="grid gap-2 sm:grid-cols-2">
+                                <label
+                                    v-for="service in serviceOptions"
+                                    :key="service.id"
+                                    class="flex cursor-pointer items-center gap-3 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 transition hover:bg-slate-50"
+                                >
+                                    <input
+                                        v-model="member.member_service_ids"
+                                        :value="service.id"
+                                        class="form-check-input size-4 rounded border-slate-300 text-primary focus:ring-primary"
+                                        type="checkbox"
+                                    />
+                                    <span>{{ service.name }}</span>
+                                </label>
+                            </div>
+                            <p v-else class="py-2 text-sm text-slate-400">No services available</p>
+                        </div>
                     </div>
 
                     <div class="lg:col-span-12 grid lg:grid-cols-12 gap-5">
