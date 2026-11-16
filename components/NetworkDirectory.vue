@@ -91,7 +91,6 @@ const serviceOptions = computed(() =>
         .filter((service) => service.active !== false && service.active !== 0)
         .sort((first, second) => first.name.localeCompare(second.name)),
 );
-
 // ✅ جلب الـ Users للـ Select - بإضافة الـ token
 const userSearchParams = ref({
     filters: {status:"approved",},
@@ -127,6 +126,12 @@ const serverParams = ref({
     perPage: 9,
     page: 1,
 });
+const selectedServices = computed(() =>
+    serviceOptions.value.filter((service) => serverParams.value.filters.member_service_ids.includes(service.id)),
+);
+const removeService = (serviceId: number) => {
+    serverParams.value.filters.member_service_ids = serverParams.value.filters.member_service_ids.filter((id) => id !== serviceId);
+};
 
 // ✅ الـ Directory API - بإضافة الـ token
 const {
@@ -257,41 +262,55 @@ const headerSettings = {
                         placeholder="(Network)"
                     />
 
-                    <details class="group relative lg:col-span-3">
-                        <summary
-                            class="flex min-h-[42px] cursor-pointer list-none items-center justify-between rounded-xl border border-slate-200 bg-white px-4 text-sm text-slate-400 shadow-sm transition hover:border-slate-300 [&::-webkit-details-marker]:hidden"
-                            :class="{ 'cursor-not-allowed opacity-60': isLoading }"
-                            @click="isLoading && $event.preventDefault()"
-                        >
-                            <span>
-                                {{
-                                    serverParams.filters.member_service_ids.length
-                                        ? `Service (${serverParams.filters.member_service_ids.length})`
-                                        : 'Service'
-                                }}
-                            </span>
-                            <Icon class="size-4 transition-transform group-open:rotate-180" name="solar:alt-arrow-down-linear" />
-                        </summary>
-                        <div class="absolute left-0 right-0 z-30 mt-2 max-h-60 overflow-y-auto rounded-xl border border-slate-200 bg-white p-2 shadow-lg">
-                            <label
-                                v-for="service in serviceOptions"
-                                :key="service.id"
-                                class="flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2 text-sm text-slate-700 transition hover:bg-slate-50"
+                    <div class="lg:col-span-3">
+                        <details class="group relative">
+                            <summary
+                                class="flex min-h-[42px] cursor-pointer list-none items-center justify-between rounded-xl border border-slate-200 bg-white px-4 text-sm text-slate-400 shadow-sm transition hover:border-slate-300 [&::-webkit-details-marker]:hidden"
+                                :class="{ 'cursor-not-allowed opacity-60': isLoading }"
+                                @click="isLoading && $event.preventDefault()"
                             >
-                                <input
-                                    v-model="serverParams.filters.member_service_ids"
+                                <span>Service</span>
+                                <Icon class="size-4 transition-transform group-open:rotate-180" name="solar:alt-arrow-down-linear" />
+                            </summary>
+                            <div class="absolute left-0 right-0 z-30 mt-2 max-h-60 overflow-y-auto rounded-xl border border-slate-200 bg-white p-2 shadow-lg">
+                                <label
+                                    v-for="service in serviceOptions"
+                                    :key="service.id"
+                                    class="flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2 text-sm text-slate-700 transition hover:bg-slate-50"
+                                >
+                                    <input
+                                        v-model="serverParams.filters.member_service_ids"
+                                        :disabled="isLoading"
+                                        :value="service.id"
+                                        class="form-check-input size-4 rounded border-slate-300 text-primary focus:ring-primary"
+                                        type="checkbox"
+                                    />
+                                    <span>{{ service.name }}</span>
+                                </label>
+                                <p v-if="!serviceOptions.length" class="px-3 py-2 text-sm text-slate-400">
+                                    No services available
+                                </p>
+                            </div>
+                        </details>
+                        <div v-if="selectedServices.length" class="mt-2 flex flex-wrap gap-2">
+                            <span
+                                v-for="service in selectedServices"
+                                :key="service.id"
+                                class="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-1 text-xs text-primary"
+                            >
+                                {{ service.name }}
+                                <button
+                                    :aria-label="`Remove ${service.name}`"
                                     :disabled="isLoading"
-                                    :value="service.id"
-                                    class="form-check-input size-4 rounded border-slate-300 text-primary focus:ring-primary"
-                                    type="checkbox"
-                                />
-                                <span>{{ service.name }}</span>
-                            </label>
-                            <p v-if="!serviceOptions.length" class="px-3 py-2 text-sm text-slate-400">
-                                No services available
-                            </p>
+                                    class="rounded-full transition hover:bg-primary/15 disabled:cursor-not-allowed disabled:opacity-50"
+                                    type="button"
+                                    @click="removeService(service.id)"
+                                >
+                                    <Icon class="size-4" name="solar:close-circle-linear" />
+                                </button>
+                            </span>
                         </div>
-                    </details>
+                    </div>
 
                     <FormTextInput 
                         v-model="serverParams.filters.city" 
