@@ -63,7 +63,6 @@ const getRowNetworks = (row: DirectoryRow) => {
 };
 
 const sortByList = [
-    { name: 'Sort By Type', id: 'type_company' },
     { name: 'Sort By Name', id: 'name' },
     { name: 'Sort By Country', id: 'country_id' },
 ];
